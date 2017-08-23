@@ -65,4 +65,13 @@
         android:layout_below="@+id/buttonTweet"
         android:layout_alignParentStart="true"
         android:layout_marginTop="8dp" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonTradeCard"
+        android:text="名刺交換"
+        android:layout_below="@+id/buttonSearchGourmet"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="8dp"/>
 </RelativeLayout>

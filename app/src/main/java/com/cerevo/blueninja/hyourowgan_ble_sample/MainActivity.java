@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonShowAirpressureSensor;
     Button buttonTweet;
     Button buttonSearchGourmet;
+    Button buttonTradeCard;
 
     //Twitter
     private Twitter mTwitter;
@@ -68,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
                     intent = new Intent(getApplicationContext(), SearchGourmetActivity.class);
                     startActivity(intent);
                     break;
+                case R.id.buttonTradeCard:
+                    intent = new Intent(getApplicationContext(), TradeCardActivity.class);
+                    startActivity(intent);
+                    break;
             }
         }
     };
@@ -92,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         buttonShowAirpressureSensor.setOnClickListener(buttonClickListener);
         buttonSearchGourmet= (Button)findViewById(R.id.buttonSearchGourmet);
         buttonSearchGourmet.setOnClickListener(buttonClickListener);
+        buttonTradeCard= (Button)findViewById(R.id.buttonTradeCard);
+        buttonTradeCard.setOnClickListener(buttonClickListener);
     }
 
     public void init_twitter() {
