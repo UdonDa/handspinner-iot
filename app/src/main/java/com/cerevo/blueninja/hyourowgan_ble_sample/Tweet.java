@@ -33,8 +33,8 @@ public class Tweet {
             protected Boolean doInBackground(String... strings) {
                 try {
                     //ツイート
-                    //mTwitter.updateStatus("人生" + preferences.getInt(TIMES, 1) + "度目のハンドスピナー！！！！ @ " + dTime.toString() +"\n" + " ");
-                    mTwitter.updateStatus("テスト");
+                    mTwitter.updateStatus("人生" + preferences.getInt(TIMES, 1) + "度目のハンドスピナー！！！！ @ " + dTime.toString() +"\n" + " ");
+                    //mTwitter.updateStatus("テスト");
                     return true;
                 } catch (TwitterException e) {
                     e.printStackTrace();

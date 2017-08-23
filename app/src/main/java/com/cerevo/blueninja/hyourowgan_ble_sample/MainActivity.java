@@ -22,13 +22,11 @@ public class MainActivity extends AppCompatActivity {
     Button buttonShowPWM;
     Button buttonShowMotionSensor;
     Button buttonShowAirpressureSensor;
-    Button buttonVerifiedTwitter, buttonTweet;
+    Button buttonTweet;
 
     //Twitter
     private Twitter mTwitter;
-    private RequestToken mRequestToken;
     public Tweet mTweet;
-    private String mCallbackURL;
     SharedPreferences preferences;
     Context act = this;
     String TIMES = "numberOfTweet";
@@ -38,22 +36,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        isVerifiedTwitter();
 
-        if (!TwitterUtils.hasAccessToken(this)) {
-            Intent intent = new Intent(this, TwitterActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
-        buttonShowGPIO = (Button)findViewById(R.id.buttonShowGPIO);
-        buttonShowGPIO.setOnClickListener(buttonClickListener);
-        buttonShowPWM = (Button)findViewById(R.id.buttonShowPWM);
-        buttonShowPWM.setOnClickListener(buttonClickListener);
-        buttonShowMotionSensor = (Button)findViewById(R.id.buttonShowMotionSensor);
-        buttonShowMotionSensor.setOnClickListener(buttonClickListener);
-        buttonShowAirpressureSensor = (Button)findViewById(R.id.buttonShowAirpressureSensor);
-        buttonShowAirpressureSensor.setOnClickListener(buttonClickListener);
-
+        init_button();
         init_twitter();
     }
 
@@ -83,29 +68,31 @@ public class MainActivity extends AppCompatActivity {
     };
 
     /*---Twitter---*/
+    public void isVerifiedTwitter() {
+        if (!TwitterUtils.hasAccessToken(this)) {
+            Intent intent = new Intent(this, TwitterActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    public void init_button() {
+        buttonShowGPIO = (Button)findViewById(R.id.buttonShowGPIO);
+        buttonShowGPIO.setOnClickListener(buttonClickListener);
+        buttonShowPWM = (Button)findViewById(R.id.buttonShowPWM);
+        buttonShowPWM.setOnClickListener(buttonClickListener);
+        buttonShowMotionSensor = (Button)findViewById(R.id.buttonShowMotionSensor);
+        buttonShowMotionSensor.setOnClickListener(buttonClickListener);
+        buttonShowAirpressureSensor = (Button)findViewById(R.id.buttonShowAirpressureSensor);
+        buttonShowAirpressureSensor.setOnClickListener(buttonClickListener);
+    }
 
     public void init_twitter() {
-        buttonVerifiedTwitter=(Button)findViewById(R.id.buttonVerifiedTwitter);
         buttonTweet=(Button)findViewById(R.id.buttonTweet);
         preferences = act.getSharedPreferences(TIMES, Context.MODE_PRIVATE);
 
-        mCallbackURL = getString(R.string.twitter_callback_url);
         mTwitter = TwitterUtils.getTwitterInstance(act);
         mTweet = new Tweet(this, mTwitter);
-
-        buttonVerifiedTwitter.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(!TwitterUtils.hasAccessToken(act)) {
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putInt(TIMES, 1);
-                    editor.apply();
-                    startAuthorize();
-                } else {
-                    showToast("認証済やで");
-                }
-            }
-        });
 
         buttonTweet.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -116,77 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 mTweet.tweet();
             }
         });
-    }
-    public void startAuthorize() {
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... voids) {
-                try{
-                    mRequestToken = mTwitter.getOAuthRequestToken(mCallbackURL);
-                    return mRequestToken.getAuthorizationURL();
-                } catch (TwitterException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(String url) {
-                if (url != null) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(intent);
-                } else {
-
-                }
-            }
-        };
-        task.execute();
-    }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        if (intent == null
-                || intent.getData() == null
-                || !intent.getData().toString().startsWith(mCallbackURL)) {
-            return;
-        }
-        String verifier = intent.getData().getQueryParameter("oauth_verifier");
-
-        AsyncTask<String, Void, AccessToken> task = new AsyncTask<String, Void, AccessToken>() {
-            @Override
-            protected AccessToken doInBackground(String... params) {
-                try {
-                    return mTwitter.getOAuthAccessToken(mRequestToken, params[0]);
-                } catch (TwitterException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(AccessToken accessToken) {
-                if (accessToken != null) {
-                    // 認証成功！
-                    showToast("認証成功！");
-                    successOAuth(accessToken);
-                } else {
-                    // 認証失敗。。。
-                    showToast("認証失敗。。。");
-                }
-            }
-        };
-        task.execute(verifier);
-    }
-
-    private void successOAuth(AccessToken accessToken) {
-        TwitterUtils.storeAccessToken(this, accessToken);
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        //finish();
-    }
-
-    private void showToast(String text){
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
 }
