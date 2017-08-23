@@ -6,18 +6,31 @@
     android:layout_height="match_parent"
     tools:context="com.cerevo.blueninja.hyourowgan_ble_sample.SearchGourmetActivity">
 
-    <Button
-        android:id="@+id/buttonFetchGps"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fetch GPS" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/txvGps"
-        android:layout_width="wrap_content"
-        android:layout_below="@+id/buttonFetchGps"
-        android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:text="GPSの場所"/>
+        <Button
+            android:id="@+id/buttonFetchGps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fetch GPS" />
+
+        <TextView
+            android:id="@+id/txvGps"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/buttonFetchGps"
+            android:layout_height="wrap_content"
+            android:textSize="24dp"
+            android:text="GPSの場所"/>
+
+    </LinearLayout>
+
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
 </RelativeLayout>
