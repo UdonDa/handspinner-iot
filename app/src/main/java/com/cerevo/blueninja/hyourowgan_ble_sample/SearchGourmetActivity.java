@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -24,6 +25,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.List;
 
+import twitter4j.Twitter;
+
 public class SearchGourmetActivity extends AppCompatActivity implements View.OnClickListener, LocationListener{
 
     //値保持するクラス
@@ -36,6 +39,13 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
     LocationManager locationmanager;
     ProgressDialog progressdialog;
+
+    //Twitter
+    private Twitter mTwitter;
+    public Tweet mTweet;
+    SharedPreferences preferences;
+    Context act = this;
+    String TIMES = "numberOfTweet";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +69,18 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         txvGps= (TextView)findViewById(R.id.txvGps);
         btn= (Button)findViewById(R.id.buttonFetchGps);
         buttonGoogleMap= (Button)findViewById(R.id.buttonGoogleMap);
-
         btn.setOnClickListener(this);
         buttonGoogleMap.setOnClickListener(this);
-
+        //Gps
         locationmanager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
         progressdialog=  new ProgressDialog (this);
         progressdialog.setMessage("Fetching..Location...");
         coordinate.mHandspinnerLat = 10.0;
         coordinate.mHandspinnerLng = 10.0;
+        //Twitter
+        preferences = act.getSharedPreferences(TIMES, Context.MODE_PRIVATE);
+        mTwitter = TwitterUtils.getTwitterInstance(act);
+        mTweet = new Tweet(this, mTwitter);
     }
 
     @Override
@@ -85,6 +97,10 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         if(view.getId()==R.id.buttonGoogleMap) {
             mLat = coordinate.mGpsLat + coordinate.mHandspinnerLat;
             mLng = coordinate.mGpsLng + coordinate.mHandspinnerLng;
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt(TIMES, preferences.getInt(TIMES,0) + 1);
+            editor.apply();
+            mTweet.tweetSearchGourmet();
             //Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=居酒屋");
             Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);

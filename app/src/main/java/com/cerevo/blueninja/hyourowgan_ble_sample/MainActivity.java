@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt(TIMES, preferences.getInt(TIMES,0) + 1);
                 editor.apply();
-                mTweet.tweet();
+                mTweet.tweetSearchGourmet();
             }
         });
     }

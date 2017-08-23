@@ -27,13 +27,40 @@ public class Tweet {
 
     }
 
-    public void tweet() {
+    public void tweetSearchGourmet() {
         AsyncTask<String, Void, Boolean> task = new AsyncTask<String, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(String... strings) {
                 try {
                     //ツイート
-                    mTwitter.updateStatus("人生" + preferences.getInt(TIMES, 1) + "度目のハンドスピナー！！！！ @ " + dTime.toString() +"\n" + " ");
+                    mTwitter.updateStatus("人生" + preferences.getInt(TIMES, 1) + "度目のハンドスピナーで飯決定！！！！ @ " + dTime.toString() +"\n" + " ");
+                    //mTwitter.updateStatus("テスト");
+                    return true;
+                } catch (TwitterException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+/*
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if(result) {
+                    showToast("ツイート成功");
+                } else {
+                    showToast("ツイート失敗");
+                }
+            }*/
+        };
+        task.execute("unchi");
+    }
+
+    public void tweetTradeCard() {
+        AsyncTask<String, Void, Boolean> task = new AsyncTask<String, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(String... strings) {
+                try {
+                    //ツイート
+                    mTwitter.updateStatus("人生" + preferences.getInt(TIMES, 1) + "度目のハンドスピナー名刺交換！！！！ @ " + dTime.toString() +"\n" + " ");
                     //mTwitter.updateStatus("テスト");
                     return true;
                 } catch (TwitterException e) {
