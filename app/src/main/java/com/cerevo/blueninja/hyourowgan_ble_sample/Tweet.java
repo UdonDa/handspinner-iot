@@ -41,15 +41,6 @@ public class Tweet {
                     return false;
                 }
             }
-/*
-            @Override
-            protected void onPostExecute(Boolean result) {
-                if(result) {
-                    showToast("ツイート成功");
-                } else {
-                    showToast("ツイート失敗");
-                }
-            }*/
         };
         task.execute("unchi");
     }
