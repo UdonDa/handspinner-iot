@@ -26,19 +26,37 @@ import java.util.List;
 
 public class SearchGourmetActivity extends AppCompatActivity implements View.OnClickListener, LocationListener{
 
+    //値保持するクラス
+    Coordinate coordinate;
+    private Double mLat, mLng;
+
     TextView txvGps;
     Button btn;
     Button buttonGoogleMap;
 
-
     LocationManager locationmanager;
     ProgressDialog progressdialog;
-    public Double mLat;
-    public Double mLng;
-    //ハンドスピナーで修正後の値
-    public Double testLat;
 
-    public Double dx_handspinner = 10.0;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search_gourmet);
+        coordinate = new Coordinate();
+        coordinate.mHandspinnerLat = 3.0;
+        coordinate.mHandspinnerLng = 3.0;
+
+        initViews();
+
+        txvGps.setText("テストお");
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            locationmanager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5,1200,this);
+            progressdialog.show();
+        }
+    }
 
     void initViews() {
         txvGps= (TextView)findViewById(R.id.txvGps);
@@ -52,26 +70,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
         progressdialog=  new ProgressDialog (this);
         progressdialog.setMessage("Fetching..Location...");
-    }
-
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_gourmet);
-        initViews();
-
-        txvGps.setText("テストお");
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            locationmanager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5,1200,this);
-            progressdialog.show();
-        }
+        coordinate.mHandspinnerLat = 10.0;
+        coordinate.mHandspinnerLng = 10.0;
     }
 
     @Override
@@ -95,7 +95,10 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
             //Uri uri = Uri.parse("geo:0,0?q=東京駅");
             //Uri uri = Uri.parse("geo:35.681382,139.766084?z=13");
-            Uri uri = Uri.parse("geo:"+mLat+dx_handspinner+","+mLng+"?q=コンビニ");
+            mLat = coordinate.mGpsLat + coordinate.mHandspinnerLat;
+            mLng = coordinate.mGpsLng + coordinate.mHandspinnerLng;
+            
+            Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=コンビニ");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
 
@@ -105,10 +108,10 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onLocationChanged(Location location) {
-        mLat = location.getLatitude();
-        mLng = location.getLongitude();
+        coordinate.mGpsLat = location.getLatitude();
+        coordinate.mGpsLng = location.getLongitude();
 
-        txvGps.setText("Location.."+testLat+" : "+location.getLongitude()); //+latitude+" : "+longitude
+        txvGps.setText("Location.."+coordinate.mGpsLat+" : "+coordinate.mGpsLng); //+latitude+" : "+longitude
 
 
         progressdialog.dismiss();
