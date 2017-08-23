@@ -66,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.buttonSearchGourmet:
                     intent = new Intent(getApplicationContext(), SearchGourmetActivity.class);
-                    //intent = new Intent(getApplicationContext(), MapsActivity.class);
-
                     startActivity(intent);
                     break;
             }

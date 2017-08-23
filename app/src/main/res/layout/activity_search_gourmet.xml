@@ -23,7 +23,7 @@
             android:layout_below="@+id/buttonFetchGps"
             android:layout_height="wrap_content"
             android:textSize="24dp"
-            android:text="GPSの場所"/>
+            android:text="Location"/>
 
     </LinearLayout>
 

@@ -42,13 +42,10 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_gourmet);
         coordinate = new Coordinate();
+        //ハンドスピナー連携部分がないので、適当に値を入れてる
         coordinate.mHandspinnerLat = 3.0;
         coordinate.mHandspinnerLng = 3.0;
-
         initViews();
-
-        txvGps.setText("テストお");
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
         }
@@ -86,55 +83,21 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         }
 
         if(view.getId()==R.id.buttonGoogleMap) {
-            /*
-            Uri gmmIntentUri = Uri.parse("google.streetview:cbll=46.414382,10.013988");
-            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            mapIntent.setPackage("com.google.android.apps.maps");
-            startActivity(mapIntent);
-            */
-
-            //Uri uri = Uri.parse("geo:0,0?q=東京駅");
-            //Uri uri = Uri.parse("geo:35.681382,139.766084?z=13");
             mLat = coordinate.mGpsLat + coordinate.mHandspinnerLat;
             mLng = coordinate.mGpsLng + coordinate.mHandspinnerLng;
-            
-            Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=コンビニ");
+            //Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=居酒屋");
+            Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
-
         }
-
     }
 
     @Override
     public void onLocationChanged(Location location) {
         coordinate.mGpsLat = location.getLatitude();
         coordinate.mGpsLng = location.getLongitude();
-
         txvGps.setText("Location.."+coordinate.mGpsLat+" : "+coordinate.mGpsLng); //+latitude+" : "+longitude
-
-
         progressdialog.dismiss();
-
-        //locationmanager.removeUpdates(this);
-/*
-        try {
-            Geocoder geocoder= new Geocoder(this);
-            List<Address> adrslist= geocoder.getFromLocation(latitude,longitude,2);
-            if (adrslist!=null && adrslist.size()>0){
-                Address address = adrslist.get(0);
-
-                StringBuffer buffer=new StringBuffer();
-                for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
-                    buffer.append(address.getAddressLine(i)+"/n");
-
-                }
-                //txvGps.setText(buffer.toString());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
     }
 
     @Override
