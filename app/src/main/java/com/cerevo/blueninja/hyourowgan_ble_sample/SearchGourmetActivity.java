@@ -102,7 +102,9 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
             editor.apply();
             mTweet.tweetSearchGourmet();
             //Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=居酒屋");
-            Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
+            //Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
+            //Uri uri = Uri.parse("google.navigation:q="+43.06417+","+141.34694+"?q=居酒屋&mode=w");//ナビゲーション
+            Uri uri = Uri.parse("google.streetview:cbll=29.9774614,31.1329645&cbp=0,30,0,0,-15");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
