@@ -6,4 +6,5 @@
     android:layout_height="match_parent"
     tools:context="com.cerevo.blueninja.hyourowgan_ble_sample.TradeCardActivity">
 
+
 </android.support.constraint.ConstraintLayout>
