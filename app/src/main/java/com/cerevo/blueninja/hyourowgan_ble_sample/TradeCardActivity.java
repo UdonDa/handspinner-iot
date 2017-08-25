@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.cerevo.blueninja.hyourowgan_ble_sample.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.w3c.dom.Text;
 
@@ -29,6 +31,10 @@ public class TradeCardActivity extends AppCompatActivity {
         Log.v("pref", githubID + " " + twitterID + " " + lineID);
 
         initTextView();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Hello, World!");
     }
 
     private void initTextView(){
