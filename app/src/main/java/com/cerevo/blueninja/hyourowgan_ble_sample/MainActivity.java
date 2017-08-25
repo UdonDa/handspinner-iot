@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,12 +30,16 @@ public class MainActivity extends AppCompatActivity {
     Button buttonSearchGourmet;
     Button buttonTradeCard;
 
+
     //Twitter
     private Twitter mTwitter;
     public Tweet mTweet;
     SharedPreferences preferences;
     Context act = this;
     String TIMES = "numberOfTweet";
+
+    //menu
+    SharedPreferences settingPref;
 
 
     @Override
@@ -45,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         init_button();
         init_twitter();
+        settingPref = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     public View.OnClickListener buttonClickListener = new View.OnClickListener() {
@@ -73,7 +79,13 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.buttonTradeCard:
+                    String githubID = settingPref.getString("github_text", "none");
+                    String twitterID = settingPref.getString("twitter_text", "none");
+                    String lineID = settingPref.getString("line_text", "none");
                     intent = new Intent(getApplicationContext(), TradeCardActivity.class);
+                    intent.putExtra("githubID", githubID);
+                    intent.putExtra("twitterID", twitterID);
+                    intent.putExtra("lineID", lineID);
                     startActivity(intent);
                     break;
             }
