@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "107859401798",
+    "firebase_url": "https://handspinneeer.firebaseio.com",
+    "project_id": "handspinneeer",
+    "storage_bucket": "handspinneeer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107859401798:android:f7b9050e8ff3a07b",
+        "android_client_info": {
+          "package_name": "com.cerevo.blueninja.hyourowgan_ble_sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107859401798-8tkv5sg19ihedjmk3jivvchg821inkc9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQX7-Bon8ytubaNxEAyCgzWAF9hhgcP5Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

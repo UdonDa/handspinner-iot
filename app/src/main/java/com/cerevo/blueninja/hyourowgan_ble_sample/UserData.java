@@ -10,11 +10,15 @@ public class UserData {
     String githubId;
     String twitterId;
     String lineId;
+    Double latitude;
+    Double longitude;
 
-    public UserData(String name, String github, String twitter, String line){
-        userName = name;
-        githubId = github;
-        twitterId = twitter;
-        lineId = line;
+    public UserData(String myName, String githubId, String twitterId, String lineId, Double latitude, Double longitude){
+        userName = userName;
+        githubId = githubId;
+        twitterId = twitterId;
+        lineId = lineId;
+        latitude = latitude;
+        longitude = longitude;
     }
 }
