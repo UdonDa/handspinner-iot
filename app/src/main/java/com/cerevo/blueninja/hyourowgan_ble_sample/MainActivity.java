@@ -82,10 +82,12 @@ public class MainActivity extends AppCompatActivity {
                     String githubID = settingPref.getString("github_text", "none");
                     String twitterID = settingPref.getString("twitter_text", "none");
                     String lineID = settingPref.getString("line_text", "none");
+                    String name = settingPref.getString("name_text", "none");
                     intent = new Intent(getApplicationContext(), TradeCardActivity.class);
                     intent.putExtra("githubID", githubID);
                     intent.putExtra("twitterID", twitterID);
                     intent.putExtra("lineID", lineID);
+                    intent.putExtra("myName", name);
                     startActivity(intent);
                     break;
             }
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent;
         switch (id) {
             case R.id.menuOption_1:
+                //設定画面に移行
                 intent=new Intent(this,com.cerevo.blueninja.hyourowgan_ble_sample.SettingsActivity.class);
                 startActivity(intent);
                 break;
