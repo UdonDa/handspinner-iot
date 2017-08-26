@@ -89,7 +89,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                 if (mutableData.getValue() == null) {
                     ud.userId = 1;
                     mutableData.setValue(1);
-                    databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
+                    databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                 } else {
                     int id = mutableData.getValue(int.class) + 1;
                     if(userData.userId == 0){
@@ -97,11 +97,11 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         //IDを取得してfirebaseにデータを送る
                         ud.userId = id;
                         mutableData.setValue(id);
-                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
+                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                     }else{
                         //2回目以降の名刺交換
                         //userIDはfirebaseに登録済みなのでIDの更新などは行わない
-                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
+                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                     }
                 }
                 //myRef.child(key).child("userName").setValue(user.userName);
