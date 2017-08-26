@@ -36,6 +36,31 @@
             android:layout_height="wrap_content"
             android:id="@+id/exchange_card"
             android:text="すたいりっしゅ名刺交換！"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/getted_name"
+            android:text="getted name"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/getted_github_id"
+            android:text="getted_github"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/getted_twitter_id"
+            android:text="getted_twitter"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/getted_line_id"
+            android:text="getted_line"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/distance"
+            android:text="distance"/>
     </LinearLayout>
 
 
