@@ -44,6 +44,9 @@ public class AirpressureActivity extends AppCompatActivity {
     private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";
     //キャラクタリスティック設定UUID
     private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
+    //松村くんオリジナルのUUID
+    private static final String UUID_kai_service = "00070000-6727-11E5-988EF07959DDCDFB";
+    private static final String UUID_kai_characteristicvalue = "00070001-6727-11E5-988EF07959DDCDFB";
     //ログのTAG
     private static final String LOG_TAG = "HRG_APSS";
 
@@ -125,6 +128,7 @@ public class AirpressureActivity extends AppCompatActivity {
         mTextStatus = (TextView)findViewById(R.id.textStatus);
         mTextLatestAirp = (TextView)findViewById(R.id.textViewLatestAirp);
         mTextLatestTemp = (TextView)findViewById(R.id.textViewLatestTemp);
+        final TextView kaiTextView = (TextView)findViewById(R.id.textView13);
 
         mButtonConnect.setOnClickListener(buttonClickLinstener);
         mButtonDisconnect.setOnClickListener(buttonClickLinstener);
@@ -183,6 +187,11 @@ public class AirpressureActivity extends AppCompatActivity {
                         ra_point.setY((double) ra / 256);
                         ap_points.add(ra_point);
                         mTextLatestAirp.setText(String.format("Latest: %7.2f hPa", (float)ra / 25600));
+
+                        buff = ByteBuffer.wrap(mRecvValue, 4, 6);
+                        buff.order(ByteOrder.LITTLE_ENDIAN);
+                        short testValue = buff.getShort();
+                        kaiTextView.setText(String.valueOf(testValue));
 
                         int cnt_points = 20;
                         chopLinePoints(mGraphTemp, tp_points, cnt_points);
