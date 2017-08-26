@@ -63,14 +63,18 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         latitude =0.0;
         longitude = 0.0;
 
-        initTextView();
-        userData = new UserData(myName, githubID, twitterID, lineID, latitude, longitude);
-        exchangeCard = (Button) findViewById(R.id.exchange_card);
-        exchangeCard.setOnClickListener(buttonClickListener);
-
         //firebase initialize
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
+
+        initTextView();
+        userData = new UserData(myName, githubID, twitterID, lineID, latitude, longitude);
+        userData.userKey = myRef.push().getKey();
+        exchangeCard = (Button) findViewById(R.id.exchange_card);
+        exchangeCard.setOnClickListener(buttonClickListener);
+
+
+
 
         //パーミッションチェック
         isGpsPermission();
@@ -79,25 +83,32 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
 
     private void uploadUserData(final DatabaseReference databaseReference, final UserData ud) {
         //部屋に入る時，部屋の人数に合わせてuserIdを決める
-        databaseReference.child("User").runTransaction(new Transaction.Handler() {
+        databaseReference.child("numberOfUserData").runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 if (mutableData.getValue() == null) {
                     ud.userId = 1;
-                    mutableData.setValue(ud);
+                    mutableData.setValue(1);
+                    databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
                 } else {
                     int id = mutableData.getValue(int.class) + 1;
-                    ud.userId = id;
-                    mutableData.setValue(ud);
+                    if(userData.userId == 0){
+                        //初めての登録
+                        //IDを取得してfirebaseにデータを送る
+                        ud.userId = id;
+                        mutableData.setValue(id);
+                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
+                    }else{
+                        //2回目以降の名刺交換
+                        //userIDはfirebaseに登録済みなのでIDの更新などは行わない
+                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
+                    }
                 }
-                /*
-                databaseReference.child(user.userKey).child("userId").setValue(user.userId);
-                myRef.child(key).child("userName").setValue(user.userName);
-                user.nextUserId = 1;
-                Log.d("nextUserID", "at 297:: " + user.nextUserId);
-                */
-                return Transaction.success(mutableData);
+                //myRef.child(key).child("userName").setValue(user.userName);
+                //user.nextUserId = 1;
+                //Log.d("nextUserID", "at 297:: " + user.nextUserId);
 
+                return Transaction.success(mutableData);
             }
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
@@ -137,8 +148,9 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-        userData = new UserData(myName, githubID, twitterID, lineID, location.getLatitude(), location.getLongitude());
-        uploadUserData(myRef, userData);
+        Log.v("gps changed", location.getLatitude() + "," + location.getLongitude());
+        userData.latitude = location.getLatitude();
+        userData.longitude = location.getLongitude();
         progressdialog.dismiss();
     }
 

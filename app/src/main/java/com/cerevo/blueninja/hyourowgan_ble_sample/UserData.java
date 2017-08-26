@@ -5,7 +5,8 @@ package com.cerevo.blueninja.hyourowgan_ble_sample;
  */
 
 public class UserData {
-    int userId;
+    int userId = 0;
+    String userKey;
     String userName;
     String githubId;
     String twitterId;
