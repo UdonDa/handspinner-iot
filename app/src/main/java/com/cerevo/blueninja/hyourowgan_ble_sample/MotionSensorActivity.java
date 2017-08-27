@@ -69,7 +69,7 @@ public class MotionSensorActivity extends AppCompatActivity {
         BLE_UPDATE_VALUE,
         BLE_CLOSED
     }
-    
+
     private AppState mAppState = AppState.INIT;
     //状態変更
     private void setStatus(AppState state)
@@ -139,14 +139,14 @@ public class MotionSensorActivity extends AppCompatActivity {
                         mCheckBoxActive.setEnabled(true);
                         break;
                     case BLE_UPDATE_VALUE:
-                        updateGraph();
+                        updateValues();
                         break;
                 }
             }
         };
     }
 
-    private void updateGraph() {
+    private void updateValues() {
         short grx, gry, grz, arx, ary, arz, mrx, mry, mrz;
         int recv_len;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
