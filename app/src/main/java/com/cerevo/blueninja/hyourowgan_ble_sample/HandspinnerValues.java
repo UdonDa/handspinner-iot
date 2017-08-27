@@ -10,4 +10,6 @@ public class HandspinnerValues {
     public double mGyroX, mGyroY, mGyroZ;
     public double mAccelX, mAccelY, mAccelZ;
     public double mMagnX, mMagnY, mMagnZ;
+    public Double mLat;//ハンドスピナーで超成分の緯度
+    public Double mLng;//　経度
 }

@@ -31,8 +31,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
     //値保持するクラス
     Coordinate coordinate;
-    private Double mLat, mLng;
-
+    HandspinnerValues mHandspinnerValues;
     TextView txvGps;
     Button btn;
     Button buttonGoogleMap;
@@ -52,9 +51,10 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_gourmet);
         coordinate = new Coordinate();
+        mHandspinnerValues = new HandspinnerValues();
         //ハンドスピナー連携部分がないので、適当に値を入れてる
-        coordinate.mHandspinnerLat = 3.0;
-        coordinate.mHandspinnerLng = 3.0;
+        mHandspinnerValues.mLat = 3.0;
+        mHandspinnerValues.mLng = 3.0;
         initViews();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
@@ -75,8 +75,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         locationmanager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         progressdialog=  new ProgressDialog (this);
         progressdialog.setMessage("Fetching..Location...");
-        coordinate.mHandspinnerLat = 10.0;
-        coordinate.mHandspinnerLng = 10.0;
+        coordinate.mUserGpsLat = 10.0;
+        coordinate.mUserGpsLng = 10.0;
         //Twitter
         preferences = act.getSharedPreferences(TIMES, Context.MODE_PRIVATE);
         mTwitter = TwitterUtils.getTwitterInstance(act);
@@ -95,14 +95,16 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         }
 
         if(view.getId()==R.id.buttonGoogleMap) {
-            mLat = coordinate.mGpsLat + coordinate.mHandspinnerLat;
-            mLng = coordinate.mGpsLng + coordinate.mHandspinnerLng;
+            Double mLat, mLng;
+
+            mLat = coordinate.mUserGpsLat + mHandspinnerValues.mLat;
+            mLng = coordinate.mUserGpsLng + mHandspinnerValues.mLng;
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt(TIMES, preferences.getInt(TIMES,0) + 1);
             editor.apply();
             mTweet.tweetSearchGourmet();
-            //Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=居酒屋");
-            Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
+            Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=居酒屋");
+            //Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
@@ -110,9 +112,9 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onLocationChanged(Location location) {
-        coordinate.mGpsLat = location.getLatitude();
-        coordinate.mGpsLng = location.getLongitude();
-        txvGps.setText("Location.."+coordinate.mGpsLat+" : "+coordinate.mGpsLng); //+latitude+" : "+longitude
+        coordinate.mUserGpsLat = location.getLatitude();
+        coordinate.mUserGpsLng = location.getLongitude();
+        txvGps.setText("Location.."+coordinate.mUserGpsLat+" : "+coordinate.mUserGpsLng); //+latitude+" : "+longitude
         progressdialog.dismiss();
     }
 
