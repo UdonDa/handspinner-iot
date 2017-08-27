@@ -40,10 +40,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     String twitterID, gettedTwitterID;
     String lineID, gettedLineID;
     String myName,gettedName;
-    Double latitude, longitude;
-    float[] distance = new float[3];
-    Double gettedLatitude, gettedlongitude;
-    long throwTime;
+    Double latitude, longitude, distance=0.0;
     Button exchangeCard;
     FirebaseDatabase database;
     DatabaseReference myRef;
@@ -51,7 +48,6 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     LocationManager locationmanager;
     ProgressDialog progressdialog;
     ChildEventListener childEventListener;
-
 
 
     @Override
@@ -102,7 +98,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                             }
                         }
                         Log.v("getted", gettedName + " " + gettedGithubID + " " + gettedTwitterID + " " + gettedLineID);
-                        //reloadView();
+                        reloadView();
                     }
                 }
 
@@ -110,7 +106,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                if(dataSnapshot.getKey() != "id" && Integer.parseInt(dataSnapshot.getKey()) != userData.userId){
+                if(dataSnapshot.getKey() != "id"){
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                         Log.v("changed", snapshot.getKey());
                         switch(snapshot.getKey()){
@@ -130,25 +126,10 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                                 gettedLineID = (String)snapshot.getValue();
                                 break;
                             }
-                            case "latitude":{
-                                gettedLatitude = (double)snapshot.getValue();
-                                break;
-                            }
-                            case "longitude":{
-                                gettedlongitude = (double)snapshot.getValue();
-                                break;
-                            }
                         }
                         Log.v("getted", gettedName + " " + gettedGithubID + " " + gettedTwitterID + " " + gettedLineID);
-                    }
-                    Location.distanceBetween(userData.latitude, userData.longitude, gettedLatitude, gettedlongitude, distance);
-                    Log.v("distance", distance[0] + "m");
-                    if( distance[0] < 100.0 && Math.abs(throwTime - System.currentTimeMillis()) < 3000 ){
-                        //GPS座標が近ければ名刺交換処理
                         reloadView();
                     }
-                }else{
-
                 }
 
             }
@@ -169,8 +150,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
 
         initTextView();
         userData = new UserData(myName, githubID, twitterID, lineID, latitude, longitude);
-        //userData.userKey = myRef.push().getKey();
-        uploadUserData(myRef, userData);
+        userData.userKey = myRef.push().getKey();
         exchangeCard = (Button) findViewById(R.id.exchange_card);
         exchangeCard.setOnClickListener(buttonClickListener);
         //パーミッションチェック
@@ -202,6 +182,10 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                     }
                 }
+                //myRef.child(key).child("userName").setValue(user.userName);
+                //user.nextUserId = 1;
+                //Log.d("nextUserID", "at 297:: " + user.nextUserId);
+
                 return Transaction.success(mutableData);
             }
 
@@ -209,21 +193,6 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
             }
         });
-        databaseReference.child("numberOfUserData").runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData mutableData) {
-                myRef.child("exchangeRoom").child(String.valueOf(userData.userId)).child("latitude").removeValue();
-                myRef.child("exchangeRoom").child(String.valueOf(userData.userId)).child("longitude").removeValue();
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-            }
-        });
-
-        throwTime = System.currentTimeMillis();
-
     }
 
 
@@ -264,7 +233,6 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         gettedGithubView.setText(gettedGithubID);
         gettedTwitterView.setText(gettedTwitterID);
         gettedLineView.setText(gettedLineID);
-        gettedDistanceView.setText(String.valueOf(distance[0]));
     }
 
 
