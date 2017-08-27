@@ -35,6 +35,8 @@ public class TwitterActivity extends AppCompatActivity {
                 startAuthorize();
             }
         });
+        isFisnishedTwitter();
+
     }
 
     @Override
@@ -43,7 +45,6 @@ public class TwitterActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HandspinnerAuthenticationActivity.class);
         startActivity(intent);
         finish();
-
     }
 
     private void startAuthorize() {
@@ -119,5 +120,13 @@ public class TwitterActivity extends AppCompatActivity {
 
     private void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void isFisnishedTwitter() {
+        if (TwitterUtils.hasAccessToken(this)) {
+            Intent intent = new Intent(this, HandspinnerAuthenticationActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonTweet;
     Button buttonSearchGourmet;
     Button buttonTradeCard;
+    HandspinnerValues mHandspinnerValues;
 
 
     //Twitter
@@ -46,11 +47,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        isVerifiedTwitter();
-
         init_button();
         init_twitter();
         settingPref = PreferenceManager.getDefaultSharedPreferences(this);
+    }
+
+    @Override
+    protected  void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     public View.OnClickListener buttonClickListener = new View.OnClickListener() {
@@ -95,14 +104,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     /*---Twitter---*/
-    public void isVerifiedTwitter() {
-        if (!TwitterUtils.hasAccessToken(this)) {
-            Intent intent = new Intent(this, TwitterActivity.class);
-            startActivity(intent);
-            finish();
-        }
-    }
-
     public void init_button() {
         buttonShowGPIO = (Button)findViewById(R.id.buttonShowGPIO);
         buttonShowGPIO.setOnClickListener(buttonClickListener);

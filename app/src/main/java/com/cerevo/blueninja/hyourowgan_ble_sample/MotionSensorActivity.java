@@ -22,11 +22,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.echo.holographlibrary.Line;
-import com.echo.holographlibrary.LineGraph;
-import com.echo.holographlibrary.LinePoint;
-
 import org.w3c.dom.Text;
 
 import java.nio.ByteBuffer;
@@ -408,12 +403,11 @@ public class MotionSensorActivity extends AppCompatActivity {
 
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
         mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);
-        mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
         mTextStatus = (TextView)findViewById(R.id.textStatus);
 
         mButtonConnect.setOnClickListener(buttonClickLinstener);
         mButtonDisconnect.setOnClickListener(buttonClickLinstener);
-
+        mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
         mCheckBoxActive.setOnClickListener(checkboxClickListener);
     }
 }

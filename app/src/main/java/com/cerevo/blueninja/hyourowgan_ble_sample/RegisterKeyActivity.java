@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -32,14 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
-    Button mButtonConnect,buttonGoToMainactivity, buttonRegisterKey, mButtonForceAuthentication;
-    TextView textViewAuthenication ,mTextViewStatus;
-    CheckBox checkBoxAuthenticate;
-    //認証できたかどうか
-    private Boolean mIsFinished;
-
+public class RegisterKeyActivity extends AppCompatActivity {
     //BLEスキャンタイムアウト
     private static final int SCAN_TIMEOUT = 20000;
     //接続対象のデバイス名
@@ -90,6 +83,10 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
 
+    private Button mButtonConnect, mButtonRegisterKey;
+    private TextView mTextViewValueGyro, mTextViewValueAccel, mTextViewValueMagm, mTextViewValueRotationNum, mTextViewStatus;
+    private CheckBox mCheckBoxActive;
+
     //状態取得
     private AppState getStats()
     {
@@ -99,13 +96,10 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     private byte[] mRecvValue;
     HandspinnerValues mHandspinnerValues;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_handspinner_authentication);
+        setContentView(R.layout.activity_register_key);
         initViews();
 
         mHandler = new Handler() {
@@ -119,38 +113,27 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                     case BLE_CLOSED:
                     case BLE_DISCONNECTED:
                         mButtonConnect.setEnabled(true);
-                        //checkBoxAuthenticate.setEnabled(false);
-                        //checkBoxAuthenticate.setChecked(false);
+                        mCheckBoxActive.setEnabled(false);
+                        mCheckBoxActive.setChecked(false);
                         break;
                     case BLE_SRV_NOT_FOUND:
                     case BLE_NOTIF_REGISTER_FAILED:
                     case BLE_SCANNING:
                         mButtonConnect.setEnabled(false);
-                        //checkBoxAuthenticate.setEnabled(false);
-                        //checkBoxAuthenticate.setChecked(false);
+                        mCheckBoxActive.setEnabled(false);
+                        mCheckBoxActive.setChecked(false);
                         break;
                     case BLE_CONNECTED:
                     case BLE_WRITE:
                         mButtonConnect.setEnabled(false);
-                        //checkBoxAuthenticate.setEnabled(true);
+                        mCheckBoxActive.setEnabled(true);
                         break;
                     case BLE_UPDATE_VALUE:
                         updateValues();
-                        isFinishedAuthentication();
                         break;
                 }
             }
         };
-    }
-
-    private void isFinishedAuthentication() {
-        //TODO:ここに、認証を書く！！！！！！！！
-
-        //↓強制デバッグボタンで、ボタン押して、trueにしたら、インテントするかのテストのため
-        if(mIsFinished) {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-        }
     }
 
     @Override
@@ -159,12 +142,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setStatus(AppState.INIT);
-        //checkBoxAuthenticate.setChecked(false);
-        //checkBoxAuthenticate.setEnabled(false);
-
-        //デバック用
-        checkBoxAuthenticate.setChecked(true);
-        checkBoxAuthenticate.setEnabled(true);
+        mCheckBoxActive.setChecked(false);
+        mCheckBoxActive.setEnabled(false);
     }
 
     @Override
@@ -174,7 +153,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-
     private void initViews() {
         mBtManager = (BluetoothManager)getSystemService(BLUETOOTH_SERVICE);
         mBtAdapter = mBtManager.getAdapter();
@@ -182,57 +160,19 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Warning: Bluetooth Disabled.", Toast.LENGTH_SHORT).show();
             finish();
         }
-        buttonGoToMainactivity = (Button)findViewById(R.id.buttonGoToMainactivity);
-        buttonGoToMainactivity.setOnClickListener(buttonClickListener);
-        textViewAuthenication = (TextView)findViewById(R.id.textViewAuthenication);
-        mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
-        buttonRegisterKey = (Button)findViewById(R.id.buttonRegisterKey);
-        buttonRegisterKey.setOnClickListener(buttonClickListener);
+
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
-        mButtonConnect.setOnClickListener(buttonClickListener);
-        mButtonForceAuthentication = (Button)findViewById(R.id.buttonForceAuthentication);
-        mButtonForceAuthentication.setOnClickListener(buttonClickListener);
-        checkBoxAuthenticate = (CheckBox)findViewById(R.id.checkBoxActive);
-        checkBoxAuthenticate.setOnClickListener(checkboxClickListener);
+        mButtonConnect.setOnClickListener(buttonClickLinstener);
+        mButtonRegisterKey = (Button)findViewById(R.id.buttonRegisterKey);
+        mButtonRegisterKey.setOnClickListener(buttonClickLinstener);
+        mTextViewValueGyro = (TextView)findViewById(R.id.textViewKeyGyro);
+        mTextViewValueAccel = (TextView)findViewById(R.id.textViewKeyAccel);
+        mTextViewValueMagm = (TextView)findViewById(R.id.textViewKeyMagm);
+        mTextViewValueRotationNum = (TextView)findViewById(R.id.textViewKeyRotationNumber);
+        mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
+        mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
+        mCheckBoxActive.setOnClickListener(checkboxClickListener);
     }
-
-    public View.OnClickListener buttonClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent;
-            switch (v.getId()) {
-                case R.id.buttonGoToMainactivity:
-                    intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.buttonRegisterKey:
-                    intent = new Intent(getApplicationContext(), RegisterKeyActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.buttonForceAuthentication:
-                    mIsFinished = true;
-                    break;
-                case R.id.buttonConnect:
-                    connectBLE();
-                    break;
-            }
-        }
-    };
-
-    private View.OnClickListener checkboxClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            CheckBox chk = (CheckBox)v;
-            if (chk.isChecked()) {
-                //enableBLENotification();
-
-
-
-            } else {
-                //disableBLENotification();
-            }
-        }
-    };
 
     private void updateValues() {
         short grx, gry, grz, arx, ary, arz, mrx, mry, mrz;
@@ -292,8 +232,47 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             buff.order(ByteOrder.LITTLE_ENDIAN);
             mrz = buff.getShort();
             mHandspinnerValues.mKeyMagnZ = mrz;
+
+            mTextViewValueGyro.setText(" x: " + String.valueOf(mHandspinnerValues.mGyroX) + "\n y: " + String.valueOf(mHandspinnerValues.mGyroY) + "\n z: "+ String.valueOf(mHandspinnerValues.mGyroZ));
+            mTextViewValueAccel.setText(" x: "+ String.valueOf(mHandspinnerValues.mAccelX) + "\n y: " + String.valueOf(mHandspinnerValues.mAccelY) + "\n z: " +String.valueOf(mHandspinnerValues.mAccelZ) + " [m/s^2]");
+            mTextViewValueMagm.setText(" x: " + String.valueOf(mHandspinnerValues.mMagnX) + "\n y: " + String.valueOf(mHandspinnerValues.mMagnY) + "\n z: "+ String.valueOf(mHandspinnerValues.mMagnZ));
+
         }
     }
+
+    private View.OnClickListener buttonClickLinstener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.buttonConnect:
+                    connectBLE();
+                    break;
+                case R.id.buttonDisconnect:
+                    switch (getStats()) {
+                        case BLE_SCANNING:
+                            mBtAdapter.stopLeScan(mLeScanCallback);
+                            setStatus(AppState.BLE_CLOSED);
+                            break;
+                        default:
+                            disconnectBLE();
+                            break;
+                    }
+                    break;
+            }
+        }
+    };
+
+    private View.OnClickListener checkboxClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            CheckBox chk = (CheckBox)v;
+            if (chk.isChecked()) {
+                enableBLENotification();
+            } else {
+                disableBLENotification();
+            }
+        }
+    };
 
     /* BLEスキャンコールバック */
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
@@ -416,6 +395,4 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
-
-
 }

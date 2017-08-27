@@ -6,20 +6,21 @@
     android:layout_height="match_parent"
     tools:context="com.cerevo.blueninja.hyourowgan_ble_sample.HandspinnerAuthenticationActivity">
 
-    <Button
-        android:layout_width="fill_parent"
+    <CheckBox
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ハンドスピナー認証"
-        android:id="@+id/buttonHandspinnerAuthentication"
-        android:layout_alignParentStart="true"/>
+        android:text="Authenticate Active"
+        android:id="@+id/checkBoxActive"
+        android:layout_alignParentStart="true"
+        android:checked="false" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:height="400dp"
         android:id="@+id/textViewAuthenication"
-        android:layout_below="@+id/buttonHandspinnerAuthentication"
-        android:text="認証"/>
+        android:layout_below="@+id/checkBoxActive"
+        android:text="認証Log"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -27,7 +28,37 @@
         android:text="MainActivity"
         android:layout_below="@+id/textViewAuthenication"
         android:id="@+id/buttonGoToMainactivity"
-
         android:layout_gravity="bottom"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="鍵登録"
+        android:id="@+id/buttonRegisterKey"
+        android:layout_toRightOf="@+id/buttonGoToMainactivity"
+        android:layout_below="@+id/textViewAuthenication"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="connect"
+        android:id="@+id/buttonConnect"
+        android:layout_above="@+id/buttonGoToMainactivity"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewBleStatus"
+        android:layout_above="@+id/buttonRegisterKey"
+        android:layout_toRightOf="@+id/buttonConnect"
+        android:text="not connected"
+        android:height="30dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="強制認証デバッグ"
+        android:id="@+id/buttonForceAuthentication"
+        android:layout_toRightOf="@+id/buttonRegisterKey"
+        android:layout_below="@+id/textViewAuthenication"/>
 </RelativeLayout>

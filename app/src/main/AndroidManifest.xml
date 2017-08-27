@@ -21,22 +21,6 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="twitter"
-                    android:scheme="ustrgm" />
-            </intent-filter>
-
         </activity>
         <activity
             android:name=".GpioActivity"
@@ -53,6 +37,21 @@
         <activity
             android:name=".TwitterActivity"
             android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="twitter"
+                    android:scheme="ustrgm" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -84,8 +83,8 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".HandspinnerAuthenticationActivity">
-        </activity>
+        <activity android:name=".HandspinnerAuthenticationActivity"></activity>
+        <activity android:name=".RegisterKeyActivity"></activity>
     </application>
 
 </manifest>
