@@ -16,6 +16,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handspinner_authentication);
+        initViews();
     }
 
 
@@ -33,6 +34,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.buttonGoToMainactivity:
                     finishedAuthentication();
+                    break;
                 case R.id.buttonHandspinnerAuthentication:
                     /*if(ok) {
                         finishedAuthentication();

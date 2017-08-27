@@ -36,6 +36,7 @@
                     android:host="twitter"
                     android:scheme="ustrgm" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".GpioActivity"
@@ -83,7 +84,8 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".HandspinnerAuthenticationActivity"></activity>
+        <activity android:name=".HandspinnerAuthenticationActivity">
+        </activity>
     </application>
 
 </manifest>
