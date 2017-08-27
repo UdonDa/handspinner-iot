@@ -95,6 +95,7 @@ public class MotionSensorActivity extends AppCompatActivity {
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
+    private HandspinnerValues mHandspinnerValues;
 
     private Handler mHandler;
     private TextView mTextViewGyro, mTextViewAccel, mTextViewMagm, mTextViewRotat;
@@ -155,48 +156,60 @@ public class MotionSensorActivity extends AppCompatActivity {
             recv_len = 18;
         }
         for (int offset = 0; offset < recv_len; offset += 18) {
+
+            mHandspinnerValues = new HandspinnerValues();
             /* Convert byte array to values. */
             ByteBuffer buff;
             //Gyro X
             buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             grx = buff.getShort();
+            mHandspinnerValues.mGyroX = (double) grx / 16.4;
             //Gyro Y
             buff = ByteBuffer.wrap(mRecvValue, offset + 2, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             gry = buff.getShort();
+            mHandspinnerValues.mGyroY = (double) gry / 16.4;
             //Gyro Z
             buff = ByteBuffer.wrap(mRecvValue, offset + 4, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             grz = buff.getShort();
+            mHandspinnerValues.mGyroZ = (double) grz / 16.4;
             //Accel X
             buff = ByteBuffer.wrap(mRecvValue, offset + 6, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             arx = buff.getShort();
+            mHandspinnerValues.mAccelX = (double) arx*10 / 2048;
             //Accel Y
             buff = ByteBuffer.wrap(mRecvValue, offset + 8, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             ary = buff.getShort();
+            mHandspinnerValues.mAccelY = (double) ary*10 / 2048;
             //Accel Z
             buff = ByteBuffer.wrap(mRecvValue, offset + 10, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             arz = buff.getShort();
+            mHandspinnerValues.mAccelZ = (double) arz*10 / 2048;
             //Magneto X
             buff = ByteBuffer.wrap(mRecvValue, offset + 12, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             mrx = buff.getShort();
+            mHandspinnerValues.mMagnX = mrx;
             //Magneto Y
             buff = ByteBuffer.wrap(mRecvValue, offset + 14, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             mry = buff.getShort();
+            mHandspinnerValues.mMagnY = mry;
             //Magneto Z
             buff = ByteBuffer.wrap(mRecvValue, offset + 16, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             mrz = buff.getShort();
+            mHandspinnerValues.mMagnZ = mrz;
 
-            mTextViewGyro.setText(" x: " + String.valueOf((double) grx / 16.4) + "\n y: " + String.valueOf((double)gry / 16.4) + "\n z: "+ String.valueOf((double) gr / 16.4));
-            mTextViewAccel.setText(" x: "+ String.valueOf((double) arx*10 / 2048) + "\n y: " + String.valueOf((double) ary*10 / 2048) + "\n z: " +(double) arz*10 / 2048 + " [m/s^2]");
-            mTextViewMagm.setText(" x: " + String.valueOf(mrx) + "\n y: " + String.valueOf(mry) + "\n z: "+ String.valueOf(mrz));
+
+            mTextViewGyro.setText(" x: " + String.valueOf(mHandspinnerValues.mGyroX) + "\n y: " + String.valueOf(mHandspinnerValues.mGyroY) + "\n z: "+ String.valueOf(mHandspinnerValues.mGyroZ));
+            mTextViewAccel.setText(" x: "+ String.valueOf(mHandspinnerValues.mAccelX) + "\n y: " + String.valueOf(mHandspinnerValues.mAccelY) + "\n z: " +String.valueOf(mHandspinnerValues.mAccelZ) + " [m/s^2]");
+            mTextViewMagm.setText(" x: " + String.valueOf(mHandspinnerValues.mMagnX) + "\n y: " + String.valueOf(mHandspinnerValues.mMagnY) + "\n z: "+ String.valueOf(mHandspinnerValues.mMagnZ));
 
         }
     }
