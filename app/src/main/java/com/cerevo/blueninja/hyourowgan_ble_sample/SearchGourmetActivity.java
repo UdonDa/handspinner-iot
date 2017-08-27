@@ -96,7 +96,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
         if(view.getId()==R.id.buttonGoogleMap) {
             Double mLat, mLng;
-
+            //unchi
             mLat = coordinate.mUserGpsLat + mHandspinnerValues.mLat;
             mLng = coordinate.mUserGpsLng + mHandspinnerValues.mLng;
             SharedPreferences.Editor editor = preferences.edit();
