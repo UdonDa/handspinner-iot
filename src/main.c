@@ -128,8 +128,8 @@ int main(void)
 
     uint32_t pin;
     /* GPIO6を入力(プルアップ)設定 */
-    Driver_PMU.StandbyInputBuffer(PMU_IO_FUNC_GPIO_6, 0);
-    Driver_GPIO.Configure(6, GPIO_DIRECTION_INPUT_PULL_UP, GPIO_EVENT_DISABLE, NULL);
+    Driver_PMU.StandbyInputBuffer(PMU_IO_FUNC_GPIO_7, 0);
+    Driver_GPIO.Configure(7, GPIO_DIRECTION_INPUT_PULL_UP, GPIO_EVENT_DISABLE, NULL);
 
     for (;;) {
         if (TZ01_system_run() == RUNEVT_POWOFF) {
@@ -142,7 +142,7 @@ int main(void)
         }
 
         char buff[64];
-        Driver_GPIO.ReadPin(6, &pin);
+        Driver_GPIO.ReadPin(7, &pin);
         sprintf(buff, "current: %d \r\n", pin);
         TZ01_console_puts(buff);
     }
