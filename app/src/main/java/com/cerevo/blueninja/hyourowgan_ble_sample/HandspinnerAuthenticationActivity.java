@@ -116,23 +116,24 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 switch (sts) {
                     case INIT:
                     case BLE_SCAN_FAILED:
+                        break;
                     case BLE_CLOSED:
                     case BLE_DISCONNECTED:
                         mButtonConnect.setEnabled(true);
-                        //checkBoxAuthenticate.setEnabled(false);
-                        //checkBoxAuthenticate.setChecked(false);
+                        checkBoxAuthenticate.setEnabled(false);
+                        checkBoxAuthenticate.setChecked(false);
                         break;
                     case BLE_SRV_NOT_FOUND:
                     case BLE_NOTIF_REGISTER_FAILED:
                     case BLE_SCANNING:
                         mButtonConnect.setEnabled(false);
-                        //checkBoxAuthenticate.setEnabled(false);
-                        //checkBoxAuthenticate.setChecked(false);
+                        checkBoxAuthenticate.setEnabled(false);
+                        checkBoxAuthenticate.setChecked(false);
                         break;
                     case BLE_CONNECTED:
                     case BLE_WRITE:
                         mButtonConnect.setEnabled(false);
-                        //checkBoxAuthenticate.setEnabled(true);
+                        checkBoxAuthenticate.setEnabled(true);
                         break;
                     case BLE_UPDATE_VALUE:
                         updateValues();
@@ -159,12 +160,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setStatus(AppState.INIT);
-        //checkBoxAuthenticate.setChecked(false);
-        //checkBoxAuthenticate.setEnabled(false);
-
-        //デバック用
-        checkBoxAuthenticate.setChecked(true);
-        checkBoxAuthenticate.setEnabled(true);
+        checkBoxAuthenticate.setChecked(false);
+        checkBoxAuthenticate.setEnabled(false);
     }
 
     @Override
@@ -224,12 +221,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         public void onClick(View v) {
             CheckBox chk = (CheckBox)v;
             if (chk.isChecked()) {
-                //enableBLENotification();
-
-
-
+                enableBLENotification();
             } else {
-                //disableBLENotification();
+                disableBLENotification();
             }
         }
     };
