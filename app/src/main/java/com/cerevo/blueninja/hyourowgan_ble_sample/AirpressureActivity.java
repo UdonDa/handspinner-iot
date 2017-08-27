@@ -98,11 +98,10 @@ public class AirpressureActivity extends AppCompatActivity {
     private Button mButtonDisconnect;
     private CheckBox mCheckBoxActive;
     private LineGraph mGraphAirp;
-    private LineGraph mGraphTemp;
     private TextView mTextStatus;
 
     private TextView mTextLatestAirp;
-    private TextView mTextLatestTemp;
+    private TextView mTextLatestRotation;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,10 +120,10 @@ public class AirpressureActivity extends AppCompatActivity {
         mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);
         mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
         mGraphAirp = (LineGraph)findViewById(R.id.graphAirp);
-        mGraphTemp = (LineGraph)findViewById(R.id.graphTemp);
+        //mGraph = (LineGraph)findViewById(R.id.graphTemp);
         mTextStatus = (TextView)findViewById(R.id.textStatus);
         mTextLatestAirp = (TextView)findViewById(R.id.textViewLatestAirp);
-        mTextLatestTemp = (TextView)findViewById(R.id.textViewLatestTemp);
+        mTextLatestRotation = (TextView)findViewById(R.id.textViewRotationNumbers);
 
         mButtonConnect.setOnClickListener(buttonClickLinstener);
         mButtonDisconnect.setOnClickListener(buttonClickLinstener);
@@ -163,17 +162,17 @@ public class AirpressureActivity extends AppCompatActivity {
                         break;
                     case BLE_UPDATE_VALUE:
                         ArrayList<LinePoint> ap_points = mGraphAirp.getLine(0).getPoints();
-                        ArrayList<LinePoint> tp_points = mGraphTemp.getLine(0).getPoints();
+                        //ArrayList<LinePoint> tp_points = mGraphTemp.getLine(0).getPoints();
 
                         //Temperature
                         ByteBuffer buff;
                         buff = ByteBuffer.wrap(mRecvValue, 0, 2);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         short rt = buff.getShort();
-                        LinePoint rt_point = new LinePoint();
-                        rt_point.setY((double) rt / 100);
-                        tp_points.add(rt_point);
-                        mTextLatestTemp.setText(String.format("Latest: %5.2f digC", (float)rt / 100));
+                        //LinePoint rt_point = new LinePoint();
+                        //rt_point.setY((double) rt / 100);
+                        //tp_points.add(rt_point);
+                        mTextLatestRotation.setText(String.format("Latest: %5.2f digC", rt));
 
                         //Airpressure
                         buff = ByteBuffer.wrap(mRecvValue, 2, 4);
@@ -185,10 +184,10 @@ public class AirpressureActivity extends AppCompatActivity {
                         mTextLatestAirp.setText(String.format("Latest: %7.2f hPa", (float)ra / 25600));
 
                         int cnt_points = 20;
-                        chopLinePoints(mGraphTemp, tp_points, cnt_points);
+                        //chopLinePoints(mGraphTemp, tp_points, cnt_points);
                         chopLinePoints(mGraphAirp, ap_points, cnt_points);
 
-                        mGraphTemp.invalidate();
+                        //mGraphTemp.invalidate();
                         mGraphAirp.invalidate();
                         break;
                 }
@@ -238,11 +237,11 @@ public class AirpressureActivity extends AppCompatActivity {
         mGraphAirp.addLine(l);
 
         //Temperature
-        mGraphTemp.setRangeX(0, 19);
-        mGraphTemp.setRangeY(-10, 50);
-        l = new Line();
-        l.setColor(Color.RED);
-        mGraphTemp.addLine(l);
+        //mGraphTemp.setRangeX(0, 19);
+        //mGraphTemp.setRangeY(-10, 50);
+        //l = new Line();
+        //l.setColor(Color.RED);
+        //mGraphTemp.addLine(l);
     }
 
     @Override

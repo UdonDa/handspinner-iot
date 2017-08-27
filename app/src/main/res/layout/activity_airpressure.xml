@@ -27,18 +27,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Temparerture(Chip)"
+        android:text="Rotation Numbers"
         android:id="@+id/textView14"
         android:layout_below="@+id/graphAirp"
         android:layout_alignParentStart="true"
         android:layout_marginTop="2dp" />
-    
+    <!--
     <com.echo.holographlibrary.LineGraph
         android:layout_width="fill_parent"
         android:layout_height="100dp"
         android:layout_below="@+id/textView14"
         android:layout_alignParentStart="true"
-        android:id="@+id/graphTemp" />
+        android:id="@+id/graphTemp" /> -->
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewRotationNumbers"
+        android:text="Rotation Numbers"
+        android:layout_below="@+id/textView14"
+        android:layout_alignParentStart="true"
+        android:height="100dp"/>
 
     <Button
         android:layout_width="fill_parent"
@@ -70,7 +79,7 @@
         android:layout_height="wrap_content"
         android:text="Active"
         android:id="@+id/checkBoxActive"
-        android:layout_below="@+id/graphTemp"
+        android:layout_below="@+id/textViewRotationNumbers"
         android:layout_alignParentStart="true"
         android:checked="false" />
 
@@ -88,8 +97,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Latest: ---.-- digC"
+        android:text="Latest: ---.-- "
         android:id="@+id/textViewLatestTemp"
-        android:layout_above="@+id/graphTemp"
-        android:layout_alignEnd="@+id/graphTemp" />
+        android:layout_above="@+id/textViewRotationNumbers"
+        android:layout_alignEnd="@+id/textViewRotationNumbers" />
 </RelativeLayout>

@@ -27,6 +27,8 @@ import com.echo.holographlibrary.Line;
 import com.echo.holographlibrary.LineGraph;
 import com.echo.holographlibrary.LinePoint;
 
+import org.w3c.dom.Text;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -95,9 +97,10 @@ public class MotionSensorActivity extends AppCompatActivity {
 
     private Handler mHandler;
 
-    private LineGraph mGraphGyro;
-    private LineGraph mGraphAccel;
-    private LineGraph mGraphMagm;
+    //private LineGraph mGraphGyro;
+    //private LineGraph mGraphAccel;
+    //private LineGraph mGraphMagm;
+    private TextView mTextViewGyro, mTextViewAccel, mTextViewMagm, mTextViewRotat;
     private Button mButtonConnect;
     private Button mButtonDisconnect;
     private CheckBox mCheckBoxActive;
@@ -116,9 +119,14 @@ public class MotionSensorActivity extends AppCompatActivity {
             finish();
         }
 
-        mGraphGyro = (LineGraph)findViewById(R.id.graphGyro);
-        mGraphAccel = (LineGraph)findViewById(R.id.graphAccel);
-        mGraphMagm = (LineGraph)findViewById(R.id.graphMagm);
+        //mGraphGyro = (LineGraph)findViewById(R.id.graphGyro);
+        //mGraphAccel = (LineGraph)findViewById(R.id.graphAccel);
+        //mGraphMagm = (LineGraph)findViewById(R.id.graphMagm);
+        mTextViewGyro = (TextView)findViewById(R.id.textViewGyro);
+        mTextViewAccel = (TextView)findViewById(R.id.textViewAccelometer);
+        mTextViewMagm = (TextView)findViewById(R.id.textViewMagnetometer);
+        mTextViewRotat = (TextView) findViewById(R.id.textViewRotationNumber);
+
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
         mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);
         mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
@@ -168,6 +176,7 @@ public class MotionSensorActivity extends AppCompatActivity {
 
     private void updateGraph() {
         short grx, gry, grz, arx, ary, arz, mrx, mry, mrz;
+        /*
         ArrayList<LinePoint> gx_points = mGraphGyro.getLine(0).getPoints();
         ArrayList<LinePoint> gy_points = mGraphGyro.getLine(1).getPoints();
         ArrayList<LinePoint> gz_points = mGraphGyro.getLine(2).getPoints();
@@ -177,6 +186,7 @@ public class MotionSensorActivity extends AppCompatActivity {
         ArrayList<LinePoint> mx_points = mGraphMagm.getLine(0).getPoints();
         ArrayList<LinePoint> my_points = mGraphMagm.getLine(1).getPoints();
         ArrayList<LinePoint> mz_points = mGraphMagm.getLine(2).getPoints();
+        */
 
         int recv_len;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -228,43 +238,45 @@ public class MotionSensorActivity extends AppCompatActivity {
             //Gyro
             LinePoint gx_point = new LinePoint();
             gx_point.setY((double) grx / 16.4);
-            gx_points.add(gx_point);
+            //gx_points.add(gx_point);
+            Log.d("Gyro", String.valueOf((double) grx / 16.4));
+
 
             LinePoint gy_point = new LinePoint();
             gy_point.setY((double) gry / 16.4);
-            gy_points.add(gy_point);
+            //gy_points.add(gy_point);
 
             LinePoint gz_point = new LinePoint();
             gz_point.setY((double) grz / 16.4);
-            gz_points.add(gz_point);
+            //gz_points.add(gz_point);
 
             //Accel
             LinePoint ax_point = new LinePoint();
             ax_point.setY((double) arx / 2048);
-            ax_points.add(ax_point);
+            //ax_points.add(ax_point);
 
             LinePoint ay_point = new LinePoint();
             ay_point.setY((double) ary / 2048);
-            ay_points.add(ay_point);
+            //ay_points.add(ay_point);
 
             LinePoint az_point = new LinePoint();
             az_point.setY((double) arz / 2048);
-            az_points.add(az_point);
+            //az_points.add(az_point);
 
             //Magm
             LinePoint mx_point = new LinePoint();
             mx_point.setY(mrx);
-            mx_points.add(mx_point);
+            //mx_points.add(mx_point);
 
             LinePoint my_point = new LinePoint();
             my_point.setY(mry);
-            my_points.add(my_point);
+            //my_points.add(my_point);
 
             LinePoint mz_point = new LinePoint();
             mz_point.setY(mrz);
-            mz_points.add(mz_point);
+            //mz_points.add(mz_point);
         }
-
+/*
         int cnt_points = 20;
         chopLinePoints(gx_points, cnt_points);
         chopLinePoints(gy_points, cnt_points);
@@ -279,6 +291,7 @@ public class MotionSensorActivity extends AppCompatActivity {
         mGraphGyro.invalidate();
         mGraphAccel.invalidate();
         mGraphMagm.invalidate();
+*/
     }
 
     private void chopLinePoints(ArrayList<LinePoint> points, int cnt) {
@@ -304,7 +317,7 @@ public class MotionSensorActivity extends AppCompatActivity {
 
         mCheckBoxActive.setChecked(false);
         mCheckBoxActive.setEnabled(false);
-
+/*
         Line l;
         //Gyro
         mGraphGyro.setRangeX(0, 19);
@@ -344,7 +357,7 @@ public class MotionSensorActivity extends AppCompatActivity {
         l = new Line();
         l.setColor(Color.BLUE);
         mGraphMagm.addLine(l);
-
+*/
     }
 
     @Override
