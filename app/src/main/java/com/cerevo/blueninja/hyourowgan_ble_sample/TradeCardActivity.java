@@ -43,6 +43,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     Double latitude, longitude;
     float[] distance = new float[3];
     Double gettedLatitude, gettedlongitude;
+    long throwTime;
     Button exchangeCard;
     FirebaseDatabase database;
     DatabaseReference myRef;
@@ -50,6 +51,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     LocationManager locationmanager;
     ProgressDialog progressdialog;
     ChildEventListener childEventListener;
+
 
 
     @Override
@@ -141,7 +143,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                     }
                     Location.distanceBetween(userData.latitude, userData.longitude, gettedLatitude, gettedlongitude, distance);
                     Log.v("distance", distance[0] + "m");
-                    if(distance[0] < 100.0){
+                    if( distance[0] < 100.0 && Math.abs(throwTime - System.currentTimeMillis()) < 3000 ){
                         //GPS座標が近ければ名刺交換処理
                         reloadView();
                     }
@@ -200,7 +202,6 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                     }
                 }
-
                 return Transaction.success(mutableData);
             }
 
@@ -208,6 +209,21 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
             }
         });
+        databaseReference.child("numberOfUserData").runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                myRef.child("exchangeRoom").child(String.valueOf(userData.userId)).child("latitude").removeValue();
+                myRef.child("exchangeRoom").child(String.valueOf(userData.userId)).child("longitude").removeValue();
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            }
+        });
+
+        throwTime = System.currentTimeMillis();
+
     }
 
 
