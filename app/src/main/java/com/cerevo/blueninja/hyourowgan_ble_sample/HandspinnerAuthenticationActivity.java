@@ -36,7 +36,7 @@ import java.util.UUID;
 public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
     Button mButtonConnect,buttonGoToMainactivity, buttonRegisterKey, mButtonForceAuthentication;
-    TextView textViewAuthenication ,mTextViewStatus;
+    TextView textViewAuthenication ,mTextViewStatus, mTextViewDirectionOfRotation, mTextViewRpm;
     CheckBox checkBoxAuthenticate;
 
     private static final int SCAN_TIMEOUT = 20000;
@@ -166,8 +166,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
         buttonGoToMainactivity = (Button)findViewById(R.id.buttonGoToMainactivity);
         buttonGoToMainactivity.setOnClickListener(buttonClickListener);
-        textViewAuthenication = (TextView)findViewById(R.id.textViewAuthenication);
         mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
+        mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
+        mTextViewDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
         buttonRegisterKey = (Button)findViewById(R.id.buttonRegisterKey);
         buttonRegisterKey.setOnClickListener(buttonClickListener);
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
