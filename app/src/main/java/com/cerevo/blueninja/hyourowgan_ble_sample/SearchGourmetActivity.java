@@ -286,7 +286,9 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                 old_stopPos = stopPos;
                 old_direction = direction;
                 old_totalRotation = totalRotation;
-                old_rpm =rpm;
+                if(old_rpm < rpm){
+                    old_rpm = rpm;
+                }
             }
             /* Convert byte array to values. */
             ByteBuffer buff;
