@@ -49,7 +49,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
     //値保持するクラス
     Coordinate coordinate;
-    TextView txvGps, mTextViewStatus;
+    TextView txvGps, mTextViewStatus,mTextViewRpm, mTextViewDirection;
     Button btn, mButtonConnect;
     Button buttonGoogleMap;
     CheckBox checkBoxAuthenticate;
@@ -131,10 +131,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_gourmet);
         coordinate = new Coordinate();
-        mHandspinnerValues = new HandspinnerValues();
         //ハンドスピナー連携部分がないので、適当に値を入れてる
-        mHandspinnerValues.mLat = 3.0;
-        mHandspinnerValues.mLng = 3.0;
         initViews();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
@@ -179,14 +176,13 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                         short rt = buff.getShort();
                         //mTextLastStopped.setText("停止位置："+ rt/256);
                         int mDirection = rt % 256;
-                        //mTextViewDirectionOfRotation.setText("回転方向: " + rt%256 );
-
+                        mTextViewDirection.setText("回転方向: " + rt%256 );
                         buff = ByteBuffer.wrap(mRecvValue, 2, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         int ra = buff.getInt();
-                        //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
+                        //mTextViewTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
                         float rpm = ra % (256*256);
-                        //mTextViewRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
+                        mTextViewRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
                         break;
                 }
             }
@@ -225,6 +221,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
         mButtonConnect.setOnClickListener(this);
         mTextViewStatus = (TextView)findViewById(R.id.textViewStatus);
+        mTextViewDirection = (TextView)findViewById(R.id.textViewDirectionOfRotation);
+        mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
         //Gps
         locationmanager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         progressdialog=  new ProgressDialog (this);
