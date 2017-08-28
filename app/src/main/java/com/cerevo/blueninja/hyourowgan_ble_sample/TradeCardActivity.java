@@ -1,6 +1,6 @@
 package com.cerevo.blueninja.hyourowgan_ble_sample;
 
-import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -20,6 +20,9 @@ import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -147,6 +150,14 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trade_card);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            locationmanager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5,1200,this);
+            progressdialog.show();
+        }
+
         locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         progressdialog = new ProgressDialog(this);
         progressdialog.setMessage("Fetching..Location...");
@@ -272,7 +283,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             @Override
             public void handleMessage(Message msg) {
                 //mTextViewStatus.setText((String)msg.obj);
-                TradeCardActivity.AppState sts = TradeCardActivity.AppState.values()[msg.what];
+                AppState sts = TradeCardActivity.AppState.values()[msg.what];
                 switch (sts) {
                     case INIT:
                     case BLE_SCAN_FAILED:
