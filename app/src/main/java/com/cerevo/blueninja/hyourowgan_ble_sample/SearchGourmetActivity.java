@@ -58,8 +58,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
     ProgressDialog progressdialog;
 
     //回転とか
-    int direction, stopPos;
-    float totalRotation, rpm;
+    int direction, stopPos, old_direction=-1, old_stopPos=-1;
+    float totalRotation, rpm, old_totalRotation=-1, old_rpm=-1;
 
     //Twitter
     private Twitter mTwitter;
@@ -269,6 +269,12 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         }
         for (int offset = 0; offset < recv_len; offset += 18) {
             mHandspinnerValues = new HandspinnerValues();
+            if(old_direction != -1){
+                old_stopPos = stopPos;
+                old_direction = direction;
+                old_totalRotation = totalRotation;
+                old_rpm =rpm;
+            }
             /* Convert byte array to values. */
             ByteBuffer buff;
             //Temperature
@@ -292,6 +298,11 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
             rpm = (float)ra%(256*256);
             //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
             //mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
+            if(totalRotation == 0){
+                mHandspinnerValues.setValues(old_stopPos, old_direction, old_totalRotation, old_rpm);
+                //計算して〜
+                mHandspinnerValues.calcidokedo(coordinate.mUserGpsLat, coordinate.mUserGpsLng);
+            }
         }
     }
 
