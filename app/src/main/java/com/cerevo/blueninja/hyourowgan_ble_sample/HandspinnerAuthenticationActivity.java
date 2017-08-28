@@ -39,24 +39,13 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     TextView textViewAuthenication ,mTextViewStatus;
     CheckBox checkBoxAuthenticate;
 
-
-
-    private Boolean mIsFinished;
-
-    //BLEスキャンタイムアウト
     private static final int SCAN_TIMEOUT = 20000;
-    //接続対象のデバイス名
     private static final String DEVICE_NAME = "HyouRowGan00";
-    /* UUIDs */
-    //BlueNinja Motion sensor Service
-    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";
-    //Motion sensor values.
-    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";
-    //キャラクタリスティック設定UUID
-    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-    //ログのTAG
+    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
+    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
+    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
     private static final String LOG_TAG = "HRG_MSS";
-    /* State */
+
     private enum AppState {
         INIT,
         BLE_SCANNING,
@@ -75,24 +64,19 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         BLE_UPDATE_VALUE,
         BLE_CLOSED
     }
-
     private enum HandspinnerState {
         ON,
         OFF
     }
     private AppState mAppState = AppState.INIT;
     private HandspinnerState mHandspinnerState = HandspinnerState.OFF;
-    //状態変更
-    private void setStatus(AppState state)
-    {
+    private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
-
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-
     private void setHandspinnerStatus(HandspinnerState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
@@ -100,14 +84,15 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         mHandspinnerState = state;
         mHandspinnerHandler.sendMessage(msg);
     }
-    private Handler mHandler,mHandspinnerHandler;
+
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
+    private HandspinnerValues mHandspinnerValues;
+    private Handler mHandler,mHandspinnerHandler;
 
-    //状態取得
     private AppState getStats() {
         return mAppState;
     }
@@ -115,14 +100,12 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         return mHandspinnerState;
     }
     private byte[] mRecvValue;
-    HandspinnerValues mHandspinnerValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handspinner_authentication);
         initViews();
-
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -174,26 +157,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         };
     }
 
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setStatus(AppState.INIT);
-        checkBoxAuthenticate.setChecked(false);
-        checkBoxAuthenticate.setEnabled(false);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        disconnectBLE();
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
-
-
     private void initViews() {
         mBtManager = (BluetoothManager)getSystemService(BLUETOOTH_SERVICE);
         mBtAdapter = mBtManager.getAdapter();
@@ -215,6 +178,24 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         checkBoxAuthenticate.setOnClickListener(checkboxClickListener);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setStatus(AppState.INIT);
+        checkBoxAuthenticate.setChecked(false);
+        checkBoxAuthenticate.setEnabled(false);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        disconnectBLE();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+
     public View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -229,7 +210,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.buttonForceAuthentication:
-                    mIsFinished = true;
                     setHandspinnerStatus(HandspinnerState.ON);
                     break;
                 case R.id.buttonConnect:
@@ -260,7 +240,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             recv_len = 18;
         }
         for (int offset = 0; offset < recv_len; offset += 18) {
-
             mHandspinnerValues = new HandspinnerValues();
             /* Convert byte array to values. */
             ByteBuffer buff;
@@ -312,12 +291,10 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
     }
 
-    /* BLEスキャンコールバック */
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (DEVICE_NAME.equals(device.getName())) {
-                //HyouRowGanを発見
                 setStatus(AppState.BLE_DEV_FOUND);
                 mBtAdapter.stopLeScan(this);
                 mBtGatt = device.connectGatt(getApplicationContext(), false, mBluetoothGattCallback);
@@ -325,7 +302,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
     };
 
-    /* GATTコールバック */
     private BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -441,7 +417,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 if(HandspinnerState.ON.equals(getHandspinnerStats())){
                     Intent intent = new Intent(c, MainActivity.class);
                     startActivity(intent);
-
                 }
             }
         },300);
