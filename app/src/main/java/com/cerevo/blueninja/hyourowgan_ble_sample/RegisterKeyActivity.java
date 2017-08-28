@@ -184,6 +184,8 @@ public class RegisterKeyActivity extends AppCompatActivity {
         }
         for (int offset = 0; offset < recv_len; offset += 18) {
 
+
+            /*---この下でハンドスピナーの値を入れて行く！---*/
             mHandspinnerValues = new HandspinnerValues();
             /* Convert byte array to values. */
             ByteBuffer buff;

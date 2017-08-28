@@ -37,7 +37,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     Button mButtonConnect,buttonGoToMainactivity, buttonRegisterKey, mButtonForceAuthentication;
     TextView textViewAuthenication ,mTextViewStatus;
     CheckBox checkBoxAuthenticate;
-    //認証できたかどうか
+
+
+
     private Boolean mIsFinished;
 
     //BLEスキャンタイムアウト
@@ -72,6 +74,11 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         BLE_UPDATE_VALUE,
         BLE_CLOSED
     }
+
+    private enum HandspinnerState {
+        ON,
+        OFF
+    }
     private AppState mAppState = AppState.INIT;
     //状態変更
     private void setStatus(AppState state)
@@ -83,7 +90,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    private Handler mHandler;
+    private Handler mHandler,mHandspinnerHandler;
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
@@ -95,12 +102,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     {
         return mAppState;
     }
-
+    private 
     private byte[] mRecvValue;
     HandspinnerValues mHandspinnerValues;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,17 +146,22 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 }
             }
         };
+
+        mHandspinnerHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case ON:
+                        mProgressBar.setProgress((Integer) msg.obj);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
     }
 
-    private void isFinishedAuthentication() {
-        //TODO:ここに、認証を書く！！！！！！！！
 
-        //↓強制デバッグボタンで、ボタン押して、trueにしたら、インテントするかのテストのため
-        if(mIsFinished) {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -411,5 +420,17 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
 
+    private void isFinishedAuthentication() {
+        mHandspinnerHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(AppState.ON)
+            }
+        })
 
+            if(mIsFinished) {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        }
+    }
 }
