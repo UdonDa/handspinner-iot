@@ -33,20 +33,16 @@ import java.util.UUID;
 
 
 public class RegisterKeyActivity extends AppCompatActivity {
-    //BLEスキャンタイムアウト
+    private Button mButtonConnect, mButtonRegisterKey;
+    private TextView mTextViewValueGyro, mTextViewValueAccel, mTextViewValueMagm, mTextViewValueRotationNum, mTextViewStatus;
+    private CheckBox mCheckBoxActive;
+
     private static final int SCAN_TIMEOUT = 20000;
-    //接続対象のデバイス名
     private static final String DEVICE_NAME = "HyouRowGan00";
-    /* UUIDs */
-    //BlueNinja Motion sensor Service
-    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";
-    //Motion sensor values.
-    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";
-    //キャラクタリスティック設定UUID
-    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-    //ログのTAG
+    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
+    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
+    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
     private static final String LOG_TAG = "HRG_MSS";
-    /* State */
     private enum AppState {
         INIT,
         BLE_SCANNING,
@@ -66,9 +62,7 @@ public class RegisterKeyActivity extends AppCompatActivity {
         BLE_CLOSED
     }
     private AppState mAppState = AppState.INIT;
-    //状態変更
-    private void setStatus(AppState state)
-    {
+    private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
@@ -76,25 +70,20 @@ public class RegisterKeyActivity extends AppCompatActivity {
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    private Handler mHandler;
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
+    private HandspinnerValues mHandspinnerValues;
+    private Handler mHandler;
 
-    private Button mButtonConnect, mButtonRegisterKey;
-    private TextView mTextViewValueGyro, mTextViewValueAccel, mTextViewValueMagm, mTextViewValueRotationNum, mTextViewStatus;
-    private CheckBox mCheckBoxActive;
-
-    //状態取得
     private AppState getStats()
     {
         return mAppState;
     }
 
     private byte[] mRecvValue;
-    HandspinnerValues mHandspinnerValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,23 +125,6 @@ public class RegisterKeyActivity extends AppCompatActivity {
         };
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setStatus(AppState.INIT);
-        mCheckBoxActive.setChecked(false);
-        mCheckBoxActive.setEnabled(false);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        disconnectBLE();
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
-
     private void initViews() {
         mBtManager = (BluetoothManager)getSystemService(BLUETOOTH_SERVICE);
         mBtAdapter = mBtManager.getAdapter();
@@ -173,6 +145,24 @@ public class RegisterKeyActivity extends AppCompatActivity {
         mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
         mCheckBoxActive.setOnClickListener(checkboxClickListener);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setStatus(AppState.INIT);
+        mCheckBoxActive.setChecked(false);
+        mCheckBoxActive.setEnabled(false);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        disconnectBLE();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
 
     private void updateValues() {
         short grx, gry, grz, arx, ary, arz, mrx, mry, mrz;
@@ -281,7 +271,6 @@ public class RegisterKeyActivity extends AppCompatActivity {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (DEVICE_NAME.equals(device.getName())) {
-                //HyouRowGanを発見
                 setStatus(AppState.BLE_DEV_FOUND);
                 mBtAdapter.stopLeScan(this);
                 mBtGatt = device.connectGatt(getApplicationContext(), false, mBluetoothGattCallback);
@@ -289,7 +278,6 @@ public class RegisterKeyActivity extends AppCompatActivity {
         }
     };
 
-    /* GATTコールバック */
     private BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {

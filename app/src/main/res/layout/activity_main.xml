@@ -14,46 +14,9 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="GPIO Service"
-        android:id="@+id/buttonShowGPIO"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="16dp" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="PWM Service"
-        android:id="@+id/buttonShowPWM"
-        android:layout_below="@+id/buttonShowGPIO"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="8dp" />
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
         android:text="Motion Sensor Service"
         android:id="@+id/buttonShowMotionSensor"
-        android:layout_below="@+id/buttonShowPWM"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="8dp" />
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Airpressure Sensor Service"
-        android:id="@+id/buttonShowAirpressureSensor"
-        android:layout_below="@+id/buttonShowMotionSensor"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="8dp" />
-
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="つぶやく！"
-        android:id="@+id/buttonTweet"
-        android:layout_below="@+id/buttonShowAirpressureSensor"
+        android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
         android:layout_marginTop="8dp" />
 
@@ -62,7 +25,7 @@
         android:layout_height="wrap_content"
         android:text="飯屋検索"
         android:id="@+id/buttonSearchGourmet"
-        android:layout_below="@+id/buttonTweet"
+        android:layout_below="@+id/buttonShowMotionSensor"
         android:layout_alignParentStart="true"
         android:layout_marginTop="8dp" />
 

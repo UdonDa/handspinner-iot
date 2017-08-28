@@ -21,25 +21,7 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
 public class MainActivity extends AppCompatActivity {
-
-    Button buttonShowGPIO;
-    Button buttonShowPWM;
-    Button buttonShowMotionSensor;
-    Button buttonShowAirpressureSensor;
-    Button buttonTweet;
-    Button buttonSearchGourmet;
-    Button buttonTradeCard;
-    HandspinnerValues mHandspinnerValues;
-
-
-    //Twitter
-    private Twitter mTwitter;
-    public Tweet mTweet;
-    SharedPreferences preferences;
-    Context act = this;
-    String TIMES = "numberOfTweet";
-
-    //menu
+    Button buttonShowMotionSensor,buttonTweet,buttonSearchGourmet,buttonTradeCard;
     SharedPreferences settingPref;
 
 
@@ -48,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init_button();
-        init_twitter();
         settingPref = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
@@ -103,46 +84,18 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    /*---Twitter---*/
     public void init_button() {
-        buttonShowGPIO = (Button)findViewById(R.id.buttonShowGPIO);
-        buttonShowGPIO.setOnClickListener(buttonClickListener);
-        buttonShowPWM = (Button)findViewById(R.id.buttonShowPWM);
-        buttonShowPWM.setOnClickListener(buttonClickListener);
         buttonShowMotionSensor = (Button)findViewById(R.id.buttonShowMotionSensor);
         buttonShowMotionSensor.setOnClickListener(buttonClickListener);
-        buttonShowAirpressureSensor = (Button)findViewById(R.id.buttonShowAirpressureSensor);
-        buttonShowAirpressureSensor.setOnClickListener(buttonClickListener);
         buttonSearchGourmet= (Button)findViewById(R.id.buttonSearchGourmet);
         buttonSearchGourmet.setOnClickListener(buttonClickListener);
         buttonTradeCard= (Button)findViewById(R.id.buttonTradeCard);
         buttonTradeCard.setOnClickListener(buttonClickListener);
     }
 
-    public void init_twitter() {
-        buttonTweet=(Button)findViewById(R.id.buttonTweet);
-        preferences = act.getSharedPreferences(TIMES, Context.MODE_PRIVATE);
-
-        mTwitter = TwitterUtils.getTwitterInstance(act);
-        mTweet = new Tweet(this, mTwitter);
-
-        buttonTweet.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt(TIMES, preferences.getInt(TIMES,0) + 1);
-                editor.apply();
-                mTweet.tweetSearchGourmet();
-            }
-        });
-    }
-
     //menu関係
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.menu_main, menu);
-        //return true;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_option, menu);
         return super.onCreateOptionsMenu(menu);
@@ -150,22 +103,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         Intent intent;
         switch (id) {
             case R.id.menuOption_1:
-                //設定画面に移行
                 intent=new Intent(this,com.cerevo.blueninja.hyourowgan_ble_sample.SettingsActivity.class);
                 startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }

@@ -15,7 +15,6 @@ public class HandspinnerValues {
     public double mKeyAccelX, mKeyAccelY, mKeyAccelZ;
     public double mKeyMagnX, mKeyMagnY, mKeyMagnZ;
 
-    public Double mLat;//ハンドスピナーで超成分の緯度
-    public Double mLng;//　経度
-    public Boolean mIsFinished;
+    public Double mLat;
+    public Double mLng;
 }
