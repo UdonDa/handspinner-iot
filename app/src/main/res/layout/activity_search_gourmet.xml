@@ -73,7 +73,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/textViewDirectionOfRotation"
         android:text="direction of rotation"
-        android:layout_below="@+id/textViewTotalRotation"
+        android:layout_below="@+id/textViewRpm"
         android:height="50dp"/>
 
 </RelativeLayout>
