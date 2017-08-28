@@ -76,4 +76,19 @@
         android:layout_below="@+id/textViewRpm"
         android:height="50dp"/>
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewMaxRpm"
+        android:layout_below="@+id/textViewDirectionOfRotation"
+        android:text="Max Rpm"
+        android:height="30dp"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="調整後のGPS"
+        android:id="@+id/textViewAdjustedGps"
+        android:layout_below="@id/textViewMaxRpm"
+        android:height="60dp"/>
 </RelativeLayout>

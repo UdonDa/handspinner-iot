@@ -49,7 +49,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
 
     //値保持するクラス
     Coordinate coordinate;
-    TextView txvGps, mTextViewStatus,mTextViewRpm, mTextViewDirection;
+    TextView txvGps, mTextViewStatus,mTextViewRpm, mTextViewDirection, mTextViewMaxRpm, mTextViewAdjustedGps;
     Button btn, mButtonConnect;
     Button buttonGoogleMap;
     CheckBox checkBoxAuthenticate;
@@ -174,21 +174,34 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                         checkBoxAuthenticate.setEnabled(true);
                         break;
                     case BLE_UPDATE_VALUE:
-                        mHandspinnerValues = new HandspinnerValues();
+                        if(old_direction != -1){
+                            old_stopPos = stopPos;
+                            old_direction = direction;
+                            old_totalRotation = totalRotation;
+                            if(old_rpm < rpm){
+                                old_rpm = rpm;
+                            }
+                        }
                         ByteBuffer buff;
                         buff = ByteBuffer.wrap(mRecvValue, 0, 2);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         short rt = buff.getShort();
-                        //mTextLastStopped.setText("停止位置："+ rt/256);
-                        int mDirection = rt % 256;
-                        mTextViewDirection.setText("回転方向: " + rt%256 );
+                        stopPos = rt/256;
+                        direction = rt%256;
                         buff = ByteBuffer.wrap(mRecvValue, 2, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         int ra = buff.getInt();
-                        //mTextViewTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
-                        float rpm = ra % (256*256);
-                        mTextViewRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
-                        break;
+                        totalRotation = (float)ra/(256*256);
+                        rpm = (float)ra%(256*256);
+                        mTextViewDirection.setText(String.format("総合回転数: %7.2f", totalRotation));
+                        mTextViewRpm.setText(String.format("rpm: %7.2f", rpm));
+                        if(totalRotation == 0){
+                            mHandspinnerValues.setValues(old_stopPos, old_direction, old_totalRotation, old_rpm);
+                            //計算して〜
+                            mHandspinnerValues.calcidokedo(coordinate.mUserGpsLat, coordinate.mUserGpsLng);
+                            mTextViewMaxRpm.setText("最大rpm: "+ mHandspinnerValues.rpm+"\n静止方位: "+ mHandspinnerValues.stopPos + "\n回転方向: " + mHandspinnerValues.direction + "\n総回転数: " + mHandspinnerValues.totalRotate);
+
+                        }
                 }
             }
         };
@@ -228,6 +241,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         mTextViewStatus = (TextView)findViewById(R.id.textViewStatus);
         mTextViewDirection = (TextView)findViewById(R.id.textViewDirectionOfRotation);
         mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
+        mTextViewMaxRpm = (TextView)findViewById(R.id.textViewMaxRpm);
+        mTextViewAdjustedGps = (TextView) findViewById(R.id.textViewAdjustedGps);
         //Gps
         locationmanager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         progressdialog=  new ProgressDialog (this);
@@ -273,8 +288,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         if(view.getId()==R.id.buttonGoogleMap) {
             Double mLat, mLng;
             //unchi
-            mLat = coordinate.mUserGpsLat + mHandspinnerValues.mLat;
-            mLng = coordinate.mUserGpsLng + mHandspinnerValues.mLng;
+            mLat = mHandspinnerValues.mLat;
+            mLng = mHandspinnerValues.mLng;
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt(TIMES, preferences.getInt(TIMES,0) + 1);
             editor.apply();

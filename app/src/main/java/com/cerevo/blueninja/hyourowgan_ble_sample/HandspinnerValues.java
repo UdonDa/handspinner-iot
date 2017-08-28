@@ -18,6 +18,7 @@ public class HandspinnerValues {
 
     public Double mLat;
     public Double mLng;
+
     public Double myLat, myLng;
 
     int stopPos, direction;

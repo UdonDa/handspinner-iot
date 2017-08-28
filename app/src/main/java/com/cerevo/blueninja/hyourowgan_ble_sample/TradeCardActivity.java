@@ -280,13 +280,11 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                     case BLE_CLOSED:
                     case BLE_DISCONNECTED:
                         mButtonConnect.setEnabled(true);
-
                         break;
                     case BLE_SRV_NOT_FOUND:
                     case BLE_NOTIF_REGISTER_FAILED:
                     case BLE_SCANNING:
                         mButtonConnect.setEnabled(false);
-
                         break;
                     case BLE_CONNECTED:
                     case BLE_WRITE:
