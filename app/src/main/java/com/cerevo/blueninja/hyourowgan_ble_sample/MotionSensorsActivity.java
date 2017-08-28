@@ -34,21 +34,13 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class MotionSensorsActivity extends AppCompatActivity {
-    //BLEスキャンタイムアウト
     private static final int SCAN_TIMEOUT = 20000;
-    //接続対象のデバイス名
     private static final String DEVICE_NAME = "HyouRowGan00";
-    /* UUIDs */
-    //BlueNinja Motion sensor Service
     private static final String UUID_SERVICE_APSS = "00060000-6727-11e5-988e-f07959ddcdfb";
-    //Motion sensor values.
     private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";
-    //キャラクタリスティック設定UUID
     private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-    //ログのTAG
     private static final String LOG_TAG = "HRG_APSS";
 
-    /* State */
     private enum AppState {
         INIT,
         BLE_SCANNING,
@@ -68,9 +60,7 @@ public class MotionSensorsActivity extends AppCompatActivity {
         BLE_CLOSED
     }
     private AppState mAppState = AppState.INIT;
-    //状態変更
-    private void setStatus(AppState state)
-    {
+    private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
@@ -78,15 +68,12 @@ public class MotionSensorsActivity extends AppCompatActivity {
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    //状態取得
     private AppState getStats()
     {
         return mAppState;
     }
 
     private byte[] mRecvValue;
-
-    /* メンバ変数 */
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
@@ -102,15 +89,11 @@ public class MotionSensorsActivity extends AppCompatActivity {
 
     private TextView mTextStatus,mTextDirectionOfRotation,mTextRpm,mTextLastStopped,mTextTotalRotation;
 
-    private TextView mTextLatestAirp;
-    private TextView mTextLatestTemp;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_motion_sensors);
 
-        /* Bluetooth関連の初期化 */
         mBtManager = (BluetoothManager)getSystemService(BLUETOOTH_SERVICE);
         mBtAdapter = mBtManager.getAdapter();
         if ((mBtAdapter == null) || !mBtAdapter.isEnabled()) {
@@ -122,8 +105,6 @@ public class MotionSensorsActivity extends AppCompatActivity {
         mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);
         mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
         mTextStatus = (TextView)findViewById(R.id.textStatus);
-        mTextLatestAirp = (TextView)findViewById(R.id.textViewLatestAirp);
-        mTextLatestTemp = (TextView)findViewById(R.id.textViewLatestTemp);
         mTextDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
         mTextRpm=(TextView)findViewById(R.id.textViewRpm);
         mTextLastStopped = (TextView)findViewById(R.id.textViewLastPositionStopped);
@@ -166,7 +147,6 @@ public class MotionSensorsActivity extends AppCompatActivity {
                         break;
                     case BLE_UPDATE_VALUE:
                         mHandspinnerValues = new HandspinnerValues();
-                        //Temperature
                         ByteBuffer buff;
                         buff = ByteBuffer.wrap(mRecvValue, 0, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
@@ -174,14 +154,11 @@ public class MotionSensorsActivity extends AppCompatActivity {
                         mTextLastStopped.setText("停止位置："+ rt/256);
                         mTextDirectionOfRotation.setText("回転方向: " + rt%256 );
 
-                        //Airpressure
                         buff = ByteBuffer.wrap(mRecvValue, 2, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         int ra = buff.getInt();
                         mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
                         mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
-
-                        int cnt_points = 20;
                         break;
                 }
             }

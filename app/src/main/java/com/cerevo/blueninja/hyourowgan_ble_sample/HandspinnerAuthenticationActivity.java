@@ -41,10 +41,10 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
     private static final int SCAN_TIMEOUT = 20000;
     private static final String DEVICE_NAME = "HyouRowGan00";
-    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
-    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
-    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
-    private static final String LOG_TAG = "HRG_MSS";
+    private static final String UUID_SERVICE_APSS = "00060000-6727-11e5-988e-f07959ddcdfb";
+    private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";
+    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
+    private static final String LOG_TAG = "HRG_APSS";
 
     private enum AppState {
         INIT,
@@ -134,7 +134,30 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                         checkBoxAuthenticate.setEnabled(true);
                         break;
                     case BLE_UPDATE_VALUE:
-                        updateValues();
+                        mHandspinnerValues = new HandspinnerValues();
+                        ByteBuffer buff;
+                        buff = ByteBuffer.wrap(mRecvValue, 0, 4);
+                        buff.order(ByteOrder.LITTLE_ENDIAN);
+                        short rt = buff.getShort();
+                        //mTextLastStopped.setText("停止位置："+ rt/256);
+                        int mDirection = rt % 256;
+                        mTextViewDirectionOfRotation.setText("回転方向: " + rt%256 );
+
+                        buff = ByteBuffer.wrap(mRecvValue, 2, 4);
+                        buff.order(ByteOrder.LITTLE_ENDIAN);
+                        int ra = buff.getInt();
+                        //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
+                        float rpm = ra % (256*256);
+                        mTextViewRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
+
+                        //認証
+                        if(mDirection == mHandspinnerValues.mKeyDirectionOfRotation) {
+                            if((rpm < mHandspinnerValues.mKeyRpm + 50) || (rpm > mHandspinnerValues.mKeyRpm - 50) ) {
+                                setHandspinnerStatus(HandspinnerState.ON);
+                            }
+
+                        }
+
                         break;
                 }
             }
@@ -177,6 +200,10 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         mButtonForceAuthentication.setOnClickListener(buttonClickListener);
         checkBoxAuthenticate = (CheckBox)findViewById(R.id.checkBoxActive);
         checkBoxAuthenticate.setOnClickListener(checkboxClickListener);
+
+        mHandspinnerValues = new HandspinnerValues();
+        mHandspinnerValues.mKeyRpm = 450;
+        mHandspinnerValues.mKeyDirectionOfRotation = 1;
     }
 
     @Override
@@ -184,7 +211,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         super.onStart();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setStatus(AppState.INIT);
+
         checkBoxAuthenticate.setChecked(false);
         checkBoxAuthenticate.setEnabled(false);
     }
@@ -232,72 +261,12 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
     };
 
-    private void updateValues() {
-        short grx, gry, grz, arx, ary, arz, mrx, mry, mrz;
-        int recv_len;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            recv_len = mRecvValue.length;
-        } else {
-            recv_len = 18;
-        }
-        for (int offset = 0; offset < recv_len; offset += 18) {
-            mHandspinnerValues = new HandspinnerValues();
-            /* Convert byte array to values. */
-            ByteBuffer buff;
-            //Gyro X
-            /*
-            buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            grx = buff.getShort();
-            mHandspinnerValues.mKeyGyroX = (double) grx / 16.4;
-            //Gyro Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 2, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            gry = buff.getShort();
-            mHandspinnerValues.mKeyGyroY = (double) gry / 16.4;
-            //Gyro Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 4, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            grz = buff.getShort();
-            mHandspinnerValues.mKeyGyroZ = (double) grz / 16.4;
-            //Accel X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 6, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arx = buff.getShort();
-            mHandspinnerValues.mKeyAccelX = (double) arx*10 / 2048;
-            //Accel Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 8, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            ary = buff.getShort();
-            mHandspinnerValues.mKeyAccelY = (double) ary*10 / 2048;
-            //Accel Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 10, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arz = buff.getShort();
-            mHandspinnerValues.mKeyAccelZ = (double) arz*10 / 2048;
-            //Magneto X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 12, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrx = buff.getShort();
-            mHandspinnerValues.mKeyMagnX = mrx;
-            //Magneto Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 14, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mry = buff.getShort();
-            mHandspinnerValues.mKeyMagnY = mry;
-            //Magneto Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 16, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrz = buff.getShort();
-            mHandspinnerValues.mKeyMagnZ = mrz;
-            */
-        }
-    }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (DEVICE_NAME.equals(device.getName())) {
+                //HyouRowGanを発見
                 setStatus(AppState.BLE_DEV_FOUND);
                 mBtAdapter.stopLeScan(this);
                 mBtGatt = device.connectGatt(getApplicationContext(), false, mBluetoothGattCallback);
@@ -324,10 +293,11 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            BluetoothGattService service = gatt.getService(UUID.fromString(UUID_SERVICE_MSS));
+            BluetoothGattService service = gatt.getService(UUID.fromString(UUID_SERVICE_APSS));
             if (service == null) {
                 //サービスが見つからない
                 setStatus(AppState.BLE_SRV_NOT_FOUND);
+                return;
             } else {
                 //サービスが見つかった
                 setStatus(AppState.BLE_SRV_FOUND);
@@ -339,17 +309,15 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 }
             }
             mGatt = gatt;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                gatt.requestMtu(40);
-            }
             setStatus(AppState.BLE_CONNECTED);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            //super.onCharacteristicChanged(gatt, characteristic);
             if (UUID_CHARACTERISTIC_VALUE.equals(characteristic.getUuid().toString())) {
                 byte read_data[] = characteristic.getValue();
-                mRecvValue = Arrays.copyOf(read_data, 36);
+                mRecvValue = Arrays.copyOf(read_data, 6);
                 setStatus(AppState.BLE_UPDATE_VALUE);
             }
         }

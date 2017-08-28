@@ -11,25 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Airpressure"
-        android:id="@+id/textView13"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Temparerture(Chip)"
-        android:id="@+id/textView14"
-        android:layout_below="@+id/textViewLatestAirp"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="2dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Total Rotation"
         android:id="@+id/textView20"
         android:layout_below="@+id/textViewLatestTemp"/>
@@ -125,20 +106,4 @@
         android:layout_alignParentStart="true"
         android:checked="false" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Latest: ----.-- hPa"
-        android:id="@+id/textViewLatestAirp"
-        android:layout_below="@+id/textView13"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Latest: ---.-- digC"
-        android:id="@+id/textViewLatestTemp"
-        android:layout_below="@+id/textView14"
-  />
 </RelativeLayout>
