@@ -15,6 +15,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
@@ -23,6 +27,7 @@ import twitter4j.auth.RequestToken;
 public class MainActivity extends AppCompatActivity {
     Button buttonShowMotionSensor,buttonTweet,buttonSearchGourmet,buttonTradeCard;
     SharedPreferences settingPref;
+    private AdView mAdView;
 
 
     @Override
@@ -31,6 +36,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         init_button();
         settingPref = PreferenceManager.getDefaultSharedPreferences(this);
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override

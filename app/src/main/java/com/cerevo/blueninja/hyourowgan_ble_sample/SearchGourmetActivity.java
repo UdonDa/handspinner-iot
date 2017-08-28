@@ -105,7 +105,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
     private HandspinnerValues mHandspinnerValues;
-    private Handler mHandler,mHandspinnerHandler;
+    private Handler mHandler,mHandspinnerHandler;*
 
     private AppState getStats() {
         return mAppState;
@@ -234,6 +234,10 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                     case BLE_CONNECTED:
                     case BLE_WRITE:
                         mButtonConnect.setEnabled(false);
+                        break;
+                    case BLE_UPDATE_VALUE:
+                        //
+                        // updateValues();
                         checkBoxAuthenticate.setEnabled(true);
                         break;
                     case BLE_UPDATE_VALUE:
