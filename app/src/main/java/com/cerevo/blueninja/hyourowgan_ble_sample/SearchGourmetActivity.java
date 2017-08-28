@@ -27,7 +27,6 @@ import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -119,12 +118,81 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
     LocationManager locationmanager;
     ProgressDialog progressdialog;
 
+    //回転とか
+    int direction, stopPos, old_direction=-1, old_stopPos=-1;
+    float totalRotation, rpm, old_totalRotation=-1, old_rpm=-1;
+
     //Twitter
     private Twitter mTwitter;
     public Tweet mTweet;
     SharedPreferences preferences;
     Context act = this;
     String TIMES = "numberOfTweet";
+
+    //BLE
+    Button mButtonConnect;
+
+    private static final int SCAN_TIMEOUT = 20000;
+    private static final String DEVICE_NAME = "HyouRowGan00";
+    private static final String UUID_SERVICE_MSS = "00060000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
+    private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
+    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
+    private static final String LOG_TAG = "HRG_MSS";
+
+    private enum AppState {
+        INIT,
+        BLE_SCANNING,
+        BLE_SCAN_FAILED,
+        BLE_DEV_FOUND,
+        BLE_SRV_FOUND,
+        BLE_CHARACTERISTIC_NOT_FOUND,
+        BLE_CONNECTED,
+        BLE_DISCONNECTED,
+        BLE_SRV_NOT_FOUND,
+        BLE_READ_SUCCESS,
+        BLE_NOTIF_REGISTERD,
+        BLE_NOTIF_REGISTER_FAILED,
+        BLE_WRITE_FALIED,
+        BLE_WRITE,
+        BLE_UPDATE_VALUE,
+        BLE_CLOSED
+    }
+    private enum HandspinnerState {
+        ON,
+        OFF
+    }
+    private SearchGourmetActivity.AppState mAppState = SearchGourmetActivity.AppState.INIT;
+    private SearchGourmetActivity.HandspinnerState mHandspinnerState = SearchGourmetActivity.HandspinnerState.OFF;
+    private void setStatus(SearchGourmetActivity.AppState state) {
+        Message msg = new Message();
+        msg.what = state.ordinal();
+        msg.obj = state.name();
+        mAppState = state;
+        mHandler.sendMessage(msg);
+    }
+    private void setHandspinnerStatus(SearchGourmetActivity.HandspinnerState state) {
+        Message msg = new Message();
+        msg.what = state.ordinal();
+        msg.obj = state.name();
+        mHandspinnerState = state;
+        mHandspinnerHandler.sendMessage(msg);
+    }
+
+    private BluetoothManager mBtManager;
+    private BluetoothAdapter mBtAdapter;
+    private BluetoothGatt mGatt;
+    private BluetoothGatt mBtGatt;
+    private BluetoothGattCharacteristic mCharacteristic;
+    private HandspinnerValues mHandspinnerValues;
+    private Handler mHandler,mHandspinnerHandler;
+
+    private SearchGourmetActivity.AppState getStats() {
+        return mAppState;
+    }
+    private SearchGourmetActivity.HandspinnerState getHandspinnerStats() {
+        return mHandspinnerState;
+    }
+    private byte[] mRecvValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

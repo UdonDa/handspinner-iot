@@ -171,7 +171,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 HandspinnerState sts = HandspinnerState.values()[msg.what];
                 switch (sts) {
                     case ON:
-                        showToast("認証成功！");
                         isFinishedAuthentication(getApplicationContext());
                         break;
                     case OFF:
@@ -212,9 +211,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         super.onStart();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         setStatus(AppState.INIT);
-
         checkBoxAuthenticate.setChecked(false);
         checkBoxAuthenticate.setEnabled(false);
     }
