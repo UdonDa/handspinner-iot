@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -80,6 +81,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         OFF
     }
     private AppState mAppState = AppState.INIT;
+    private HandspinnerState mHandspinnerState = HandspinnerState.OFF;
     //状態変更
     private void setStatus(AppState state)
     {
@@ -90,6 +92,14 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         mAppState = state;
         mHandler.sendMessage(msg);
     }
+
+    private void setHandspinnerStatus(HandspinnerState state) {
+        Message msg = new Message();
+        msg.what = state.ordinal();
+        msg.obj = state.name();
+        mHandspinnerState = state;
+        mHandspinnerHandler.sendMessage(msg);
+    }
     private Handler mHandler,mHandspinnerHandler;
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
@@ -98,11 +108,12 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     private BluetoothGattCharacteristic mCharacteristic;
 
     //状態取得
-    private AppState getStats()
-    {
+    private AppState getStats() {
         return mAppState;
     }
-    private 
+    private HandspinnerState getHandspinnerStats() {
+        return mHandspinnerState;
+    }
     private byte[] mRecvValue;
     HandspinnerValues mHandspinnerValues;
 
@@ -141,7 +152,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                         break;
                     case BLE_UPDATE_VALUE:
                         updateValues();
-                        isFinishedAuthentication();
                         break;
                 }
             }
@@ -150,9 +160,12 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         mHandspinnerHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                switch (msg.what) {
+                HandspinnerState sts = HandspinnerState.values()[msg.what];
+                switch (sts) {
                     case ON:
-                        mProgressBar.setProgress((Integer) msg.obj);
+                        isFinishedAuthentication(getApplicationContext());
+                        break;
+                    case OFF:
                         break;
                     default:
                         break;
@@ -217,6 +230,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                     break;
                 case R.id.buttonForceAuthentication:
                     mIsFinished = true;
+                    setHandspinnerStatus(HandspinnerState.ON);
                     break;
                 case R.id.buttonConnect:
                     connectBLE();
@@ -420,17 +434,16 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
 
-    private void isFinishedAuthentication() {
+    private void isFinishedAuthentication(final Context c) {
         mHandspinnerHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(AppState.ON)
-            }
-        })
+                if(HandspinnerState.ON.equals(getHandspinnerStats())){
+                    Intent intent = new Intent(c, MainActivity.class);
+                    startActivity(intent);
 
-            if(mIsFinished) {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-        }
+                }
+            }
+        },300);
     }
 }
