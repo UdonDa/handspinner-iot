@@ -48,20 +48,8 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent;
             switch (v.getId()) {
-                case R.id.buttonShowGPIO:
-                    intent = new Intent(getApplicationContext(), GpioActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.buttonShowPWM:
-                    intent = new Intent(getApplicationContext(), PwmActivity.class);
-                    startActivity(intent);
-                    break;
                 case R.id.buttonShowMotionSensor:
                     intent = new Intent(getApplicationContext(), MotionSensorActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.buttonShowAirpressureSensor:
-                    intent = new Intent(getApplicationContext(), AirpressureActivity.class);
                     startActivity(intent);
                     break;
                 case R.id.buttonSearchGourmet:
