@@ -152,9 +152,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
                         //認証
                         if(mDirection == mHandspinnerValues.mKeyDirectionOfRotation) {
-                            if((rpm < mHandspinnerValues.mKeyRpm + 5) || (rpm > mHandspinnerValues.mKeyRpm - 5) ) {
+                            if((rpm < mHandspinnerValues.mKeyRpm + 50) || (rpm > mHandspinnerValues.mKeyRpm - 50) ) {
                             //if(rpm == mHandspinnerValues.mKeyRpm) {
-
                                 setHandspinnerStatus(HandspinnerState.ON);
                             }
 

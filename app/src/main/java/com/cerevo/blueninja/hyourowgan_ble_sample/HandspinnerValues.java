@@ -8,8 +8,8 @@ public class HandspinnerValues {
     HandspinnerValues(){}
 
 
-    public int mTotalRotat;
-    public int mRpm;
+    public float mTotalRotat;
+    public float mRpm;
     public int mLastPositionStopped;//(0 ~ 7が入る)
     public int mDirectionOfRotation;
 
@@ -31,8 +31,4 @@ public class HandspinnerValues {
         this.rpm = rpm;
     }
 
-    public void calcidokedo(Double usrLat, Double usrLng){
-        mLat = usrLat+(rpm/400)*100*Math.sin((direction/4.0)*Math.PI);
-        mLng = usrLng+(rpm/400)*100*Math.cos((direction/4.0)*Math.PI);
-    }
 }

@@ -41,6 +41,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import twitter4j.Twitter;
@@ -174,7 +175,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                         checkBoxAuthenticate.setEnabled(true);
                         break;
                     case BLE_UPDATE_VALUE:
-                        if(old_direction != -1){
+                        if(old_direction == -1){
                             old_stopPos = stopPos;
                             old_direction = direction;
                             old_totalRotation = totalRotation;
@@ -195,13 +196,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                         rpm = (float)ra%(256*256);
                         mTextViewDirection.setText(String.format("総合回転数: %7.2f", totalRotation));
                         mTextViewRpm.setText(String.format("rpm: %7.2f", rpm));
-                        if(totalRotation == 0){
-                            mHandspinnerValues.setValues(old_stopPos, old_direction, old_totalRotation, old_rpm);
-                            //計算して〜
-                            mHandspinnerValues.calcidokedo(coordinate.mUserGpsLat, coordinate.mUserGpsLng);
-                            mTextViewMaxRpm.setText("最大rpm: "+ mHandspinnerValues.rpm+"\n静止方位: "+ mHandspinnerValues.stopPos + "\n回転方向: " + mHandspinnerValues.direction + "\n総回転数: " + mHandspinnerValues.totalRotate);
 
-                        }
                 }
             }
         };
@@ -212,6 +207,22 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                 HandspinnerState sts = HandspinnerState.values()[msg.what];
                 switch (sts) {
                     case ON:
+                        Double mLat, mLng;
+                        //unchi
+                        Random rand = new Random();
+                        Double numLat = (rand.nextInt(1) - 0.5);
+                        Double numLng = (rand.nextInt(1) - 0.5);
+
+                        mLat = coordinate.mUserGpsLat + numLat;
+                        mLng = coordinate.mUserGpsLng + numLng;
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putInt(TIMES, preferences.getInt(TIMES,0) + 1);
+                        editor.apply();
+                        mTweet.tweetSearchGourmet();
+                        Uri uri = Uri.parse("geo:"+mLat+","+mLng+"?q=居酒屋");
+                        //Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
                         break;
                     case OFF:
                         break;
@@ -286,6 +297,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         }
 
         if(view.getId()==R.id.buttonGoogleMap) {
+            /*
             Double mLat, mLng;
             //unchi
             mLat = mHandspinnerValues.mLat;
@@ -298,6 +310,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
             //Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
+            */
+            setHandspinnerStatus(HandspinnerState.ON);
         }
         if(view.getId()==R.id.buttonConnect) {
             connectBLE();
