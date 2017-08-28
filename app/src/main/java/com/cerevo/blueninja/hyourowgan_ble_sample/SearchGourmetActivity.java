@@ -114,7 +114,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
     public void onLocationChanged(Location location) {
         coordinate.mUserGpsLat = location.getLatitude();
         coordinate.mUserGpsLng = location.getLongitude();
-        txvGps.setText("Location.."+coordinate.mUserGpsLat+" : "+coordinate.mUserGpsLng); //+latitude+" : "+longitude
+        txvGps.setText("Location.a."+coordinate.mUserGpsLat+" : "+coordinate.mUserGpsLng); //+latitude+" : "+longitude
         progressdialog.dismiss();
     }
 

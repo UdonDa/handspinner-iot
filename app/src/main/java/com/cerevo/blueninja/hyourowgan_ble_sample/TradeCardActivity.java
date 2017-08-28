@@ -309,6 +309,12 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                 }
             }
         };
+        mBtManager = (BluetoothManager)getSystemService(BLUETOOTH_SERVICE);
+        mBtAdapter = mBtManager.getAdapter();
+        if ((mBtAdapter == null) || !mBtAdapter.isEnabled()) {
+            Toast.makeText(getApplicationContext(), "Warning: Bluetooth Disabled.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
     }
     @Override
@@ -538,7 +544,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             Log.i(LOG_TAG, String.format("mtu=%d", mtu));
-            //super.onMtuChanged(gatt, mtu, status);
+            super.onMtuChanged(gatt, mtu, status);
         }
     };
 
