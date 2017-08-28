@@ -20,38 +20,41 @@
         android:id="@+id/textViewValues"/>
 
     <TextView
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewKeyGyro"
-        android:layout_below="@id/textViewValues"
-        android:height="30dp"
-        android:text="Gyro"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Direction of rotation"
+        android:id="@+id/textView23"
+        android:layout_below="@+id/textViewValues" />
+
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewKeyAccel"
-        android:layout_below="@id/textViewKeyGyro"
-        android:height="30dp"
-        android:text="Accel"/>
+        android:id="@+id/textViewDirectionOfRotation"
+        android:layout_below="@+id/textView23"
+        android:text="Direction of rotation"
+        android:height="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Rpm"
+        android:id="@+id/textView21"
+        android:layout_below="@+id/textViewDirectionOfRotation" />
+
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewKeyMagm"
-        android:layout_below="@id/textViewKeyAccel"
-        android:height="30dp"
-        android:text="Magm"/>
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewKeyRotationNumber"
-        android:layout_below="@id/textViewKeyMagm"
-        android:height="30dp"
-        android:text="RotationNum"/>
+        android:id="@+id/textViewRpm"
+        android:layout_below="@+id/textView21"
+        android:text="Rpm"
+        android:height="30dp"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewKeyRotationNumber"
+        android:layout_below="@+id/textViewRpm"
         android:id="@+id/buttonConnect"
         android:text="connect"/>
 
