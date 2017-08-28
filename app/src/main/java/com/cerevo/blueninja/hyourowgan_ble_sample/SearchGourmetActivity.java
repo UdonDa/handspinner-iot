@@ -204,6 +204,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
             Toast.makeText(getApplicationContext(), "Warning: Bluetooth Disabled.", Toast.LENGTH_SHORT).show();
             finish();
         }
+        connectBLE();
     }
 
     @Override
