@@ -149,6 +149,8 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trade_card);
+        progressdialog=  new ProgressDialog (this);
+        progressdialog.setMessage("Fetching..Location...");
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
