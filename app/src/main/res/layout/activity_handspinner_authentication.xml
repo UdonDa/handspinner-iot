@@ -50,16 +50,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MainActivity"
-        android:layout_below="@+id/buttonConnect"
-        android:id="@+id/buttonGoToMainactivity" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="鍵登録"
         android:id="@+id/buttonRegisterKey"
-        android:layout_below="@+id/buttonGoToMainactivity"/>
+        android:layout_below="@+id/buttonConnect"/>
 
     <Button
         android:layout_width="wrap_content"

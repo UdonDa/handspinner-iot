@@ -35,7 +35,7 @@ import java.util.UUID;
 
 public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
-    Button mButtonConnect,buttonGoToMainactivity, buttonRegisterKey, mButtonForceAuthentication;
+    Button mButtonConnect, buttonRegisterKey, mButtonForceAuthentication;
     TextView textViewAuthenication ,mTextViewStatus, mTextViewDirectionOfRotation, mTextViewRpm;
     CheckBox checkBoxAuthenticate;
 
@@ -136,7 +136,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                     case BLE_UPDATE_VALUE:
                         mHandspinnerValues = new HandspinnerValues();
                         ByteBuffer buff;
-                        buff = ByteBuffer.wrap(mRecvValue, 0, 4);
+                        buff = ByteBuffer.wrap(mRecvValue, 0, 2);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         short rt = buff.getShort();
                         //mTextLastStopped.setText("停止位置："+ rt/256);
@@ -152,7 +152,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
                         //認証
                         if(mDirection == mHandspinnerValues.mKeyDirectionOfRotation) {
-                            if((rpm < mHandspinnerValues.mKeyRpm + 50) || (rpm > mHandspinnerValues.mKeyRpm - 50) ) {
+                            if((rpm < mHandspinnerValues.mKeyRpm + 5) || (rpm > mHandspinnerValues.mKeyRpm - 5) ) {
+                            //if(rpm == mHandspinnerValues.mKeyRpm) {
+
                                 setHandspinnerStatus(HandspinnerState.ON);
                             }
 
@@ -169,6 +171,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 HandspinnerState sts = HandspinnerState.values()[msg.what];
                 switch (sts) {
                     case ON:
+                        showToast("認証成功！");
                         isFinishedAuthentication(getApplicationContext());
                         break;
                     case OFF:
@@ -187,8 +190,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Warning: Bluetooth Disabled.", Toast.LENGTH_SHORT).show();
             finish();
         }
-        buttonGoToMainactivity = (Button)findViewById(R.id.buttonGoToMainactivity);
-        buttonGoToMainactivity.setOnClickListener(buttonClickListener);
         mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
         mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
         mTextViewDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
@@ -202,7 +203,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         checkBoxAuthenticate.setOnClickListener(checkboxClickListener);
 
         mHandspinnerValues = new HandspinnerValues();
-        mHandspinnerValues.mKeyRpm = 450;
+        mHandspinnerValues.mKeyRpm = 700;
         mHandspinnerValues.mKeyDirectionOfRotation = 1;
     }
 
@@ -231,10 +232,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent;
             switch (v.getId()) {
-                case R.id.buttonGoToMainactivity:
-                    intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    break;
                 case R.id.buttonRegisterKey:
                     intent = new Intent(getApplicationContext(), RegisterKeyActivity.class);
                     startActivity(intent);
@@ -387,4 +384,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
 }

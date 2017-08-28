@@ -7,6 +7,13 @@
     android:background="#00bfff"
     tools:context="com.cerevo.blueninja.hyourowgan_ble_sample.TwitterActivity">
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="ハンドスピナー \n\n\n\n \n横\nか\nら\n回\nす\nか\n  \n\n\n\n下から回すか"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
+
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
