@@ -70,6 +70,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     LocationManager locationmanager;
     ProgressDialog progressdialog;
     ChildEventListener childEventListener;
+    Boolean isexchanged = false;
 
     //BLE
     Button mButtonConnect;
@@ -227,9 +228,10 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                     }
                     Location.distanceBetween(userData.latitude, userData.longitude, gettedLatitude, gettedlongitude, distance);
                     Log.v("distance", distance[0] + "m");
-                    if( distance[0] < 100.0 && Math.abs(throwTime - System.currentTimeMillis()) < 3000 ){
+                    if( distance[0] < 100.0 && Math.abs(throwTime - System.currentTimeMillis()) < 3000 && !isexchanged){
                         //GPS座標が近ければ名刺交換処理
                         reloadView();
+                        isexchanged = true;
                     }
                 }else{
 
