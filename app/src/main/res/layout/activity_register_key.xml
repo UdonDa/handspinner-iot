@@ -75,4 +75,11 @@
         android:layout_alignParentStart="true"
         android:checked="false" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="強制鍵作成"
+        android:id="@+id/buttonForceMakeKey"
+        android:layout_below="@+id/checkBoxActive"/>
+
 </RelativeLayout>

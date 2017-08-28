@@ -16,9 +16,8 @@ public class HandspinnerValues {
     public int mLastPositionStopped;//(0 ~ 7が入る)
     public int mDirectionOfRotation;
 
-    public double mKeyGyroX, mKeyGyroY, mKeyGyroZ;
-    public double mKeyAccelX, mKeyAccelY, mKeyAccelZ;
-    public double mKeyMagnX, mKeyMagnY, mKeyMagnZ;
+    public int mKeyDirectionOfRotation;
+    public int mKeyRpm;
 
     public Double mLat;
     public Double mLng;

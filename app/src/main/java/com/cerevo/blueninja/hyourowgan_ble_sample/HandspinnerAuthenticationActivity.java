@@ -244,6 +244,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             /* Convert byte array to values. */
             ByteBuffer buff;
             //Gyro X
+            /*
             buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             grx = buff.getShort();
@@ -288,6 +289,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             buff.order(ByteOrder.LITTLE_ENDIAN);
             mrz = buff.getShort();
             mHandspinnerValues.mKeyMagnZ = mrz;
+            */
         }
     }
 
@@ -411,14 +413,9 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
     }
 
     private void isFinishedAuthentication(final Context c) {
-        mHandspinnerHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(HandspinnerState.ON.equals(getHandspinnerStats())){
-                    Intent intent = new Intent(c, MainActivity.class);
-                    startActivity(intent);
-                }
-            }
-        },300);
+        if(HandspinnerState.ON.equals(getHandspinnerStats())) {
+            Intent intent = new Intent(c, MainActivity.class);
+            startActivity(intent);
+        }
     }
 }
