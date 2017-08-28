@@ -303,6 +303,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         break;
                     case BLE_UPDATE_VALUE:
                         //updateValues();
+                        //忍者から値が送られてきたときの処理
                         ByteBuffer buff;
                         buff = ByteBuffer.wrap(mRecvValue, 0, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
@@ -380,14 +381,14 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         //IDを取得してfirebaseにデータを送る
                         userData.userId = id;
                         mutableData.setValue(id);
-                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
+                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
                     } else {
                         //2回目以降の名刺交換
                         //userIDはfirebaseに登録済みなのでIDの更新などは行わない
                         //まるごと送るけど，実質GPSの更新情報の更新
                         userData.userId = id;
                         mutableData.setValue(id);
-                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
+                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
                     }
                 }
                 return Transaction.success(mutableData);
