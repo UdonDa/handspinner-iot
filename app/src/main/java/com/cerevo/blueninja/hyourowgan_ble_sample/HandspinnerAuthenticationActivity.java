@@ -41,10 +41,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
     private static final int SCAN_TIMEOUT = 20000;
     private static final String DEVICE_NAME = "HyouRowGan00";
-<<<<<<< HEAD
-=======
-
->>>>>>> 48f837da52359a81ea5ec39b2266f84c4781283d
     private static final String UUID_SERVICE_APSS = "00060000-6727-11e5-988e-f07959ddcdfb";
     private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";
     private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
