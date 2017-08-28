@@ -23,7 +23,7 @@
             android:layout_below="@+id/buttonFetchGps"
             android:layout_height="wrap_content"
             android:textSize="24dp"
-            android:text="Location"/>
+            android:text="MyLocation"/>
 
     </LinearLayout>
 
@@ -64,7 +64,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/textViewRpm"
         android:text="Rpm"
-        android:height="30dp"
+        android:height="50dp"
         android:layout_below="@+id/checkBoxActive"
         android:layout_alignParentStart="true" />
 
@@ -73,7 +73,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/textViewDirectionOfRotation"
         android:text="direction of rotation"
-        android:layout_below="@+id/textViewRpm"
-        android:height="30dp"/>
+        android:layout_below="@+id/textViewTotalRotation"
+        android:height="50dp"/>
 
 </RelativeLayout>
