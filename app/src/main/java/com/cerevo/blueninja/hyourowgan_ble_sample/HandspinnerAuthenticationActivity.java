@@ -9,7 +9,10 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -22,9 +25,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.echo.holographlibrary.Line;
-import com.echo.holographlibrary.LineGraph;
-import com.echo.holographlibrary.LinePoint;
+import org.w3c.dom.Text;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -32,22 +33,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class AirpressureActivity extends AppCompatActivity {
-    //BLEスキャンタイムアウト
-    private static final int SCAN_TIMEOUT = 20000;
-    //接続対象のデバイス名
-    private static final String DEVICE_NAME = "HyouRowGan00";
-    /* UUIDs */
-    //BlueNinja Motion sensor Service
-    private static final String UUID_SERVICE_APSS = "00060000-6727-11e5-988e-f07959ddcdfb";
-    //Motion sensor values.
-    private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";
-    //キャラクタリスティック設定UUID
-    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-    //ログのTAG
-    private static final String LOG_TAG = "HRG_APSS";
+public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
-    /* State */
+    Button mButtonConnect,buttonGoToMainactivity, buttonRegisterKey, mButtonForceAuthentication;
+    TextView textViewAuthenication ,mTextViewStatus;
+    CheckBox checkBoxAuthenticate;
+
+    private static final int SCAN_TIMEOUT = 20000;
+    private static final String DEVICE_NAME = "HyouRowGan00";
+    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
+    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
+    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
+    private static final String LOG_TAG = "HRG_MSS";
+
     private enum AppState {
         INIT,
         BLE_SCANNING,
@@ -66,156 +64,118 @@ public class AirpressureActivity extends AppCompatActivity {
         BLE_UPDATE_VALUE,
         BLE_CLOSED
     }
+    private enum HandspinnerState {
+        ON,
+        OFF
+    }
     private AppState mAppState = AppState.INIT;
-    //状態変更
-    private void setStatus(AppState state)
-    {
+    private HandspinnerState mHandspinnerState = HandspinnerState.OFF;
+    private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
-
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    //状態取得
-    private AppState getStats()
-    {
-        return mAppState;
+    private void setHandspinnerStatus(HandspinnerState state) {
+        Message msg = new Message();
+        msg.what = state.ordinal();
+        msg.obj = state.name();
+        mHandspinnerState = state;
+        mHandspinnerHandler.sendMessage(msg);
     }
 
-    private byte[] mRecvValue;
-
-    /* メンバ変数 */
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
+    private HandspinnerValues mHandspinnerValues;
+    private Handler mHandler,mHandspinnerHandler;
 
-    private Handler mHandler;
+    private AppState getStats() {
+        return mAppState;
+    }
+    private HandspinnerState getHandspinnerStats() {
+        return mHandspinnerState;
+    }
+    private byte[] mRecvValue;
 
-    private Button mButtonConnect;
-    private Button mButtonDisconnect;
-    private CheckBox mCheckBoxActive;
-    private LineGraph mGraphAirp;
-    private LineGraph mGraphTemp;
-    private TextView mTextStatus;
-
-    private TextView mTextLatestAirp;
-    private TextView mTextLatestTemp;
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_airpressure);
+        setContentView(R.layout.activity_handspinner_authentication);
+        initViews();
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                mTextViewStatus.setText((String)msg.obj);
+                AppState sts = AppState.values()[msg.what];
+                switch (sts) {
+                    case INIT:
+                    case BLE_SCAN_FAILED:
+                        break;
+                    case BLE_CLOSED:
+                    case BLE_DISCONNECTED:
+                        mButtonConnect.setEnabled(true);
+                        checkBoxAuthenticate.setEnabled(false);
+                        checkBoxAuthenticate.setChecked(false);
+                        break;
+                    case BLE_SRV_NOT_FOUND:
+                    case BLE_NOTIF_REGISTER_FAILED:
+                    case BLE_SCANNING:
+                        mButtonConnect.setEnabled(false);
+                        checkBoxAuthenticate.setEnabled(false);
+                        checkBoxAuthenticate.setChecked(false);
+                        break;
+                    case BLE_CONNECTED:
+                    case BLE_WRITE:
+                        mButtonConnect.setEnabled(false);
+                        checkBoxAuthenticate.setEnabled(true);
+                        break;
+                    case BLE_UPDATE_VALUE:
+                        updateValues();
+                        break;
+                }
+            }
+        };
 
-        /* Bluetooth関連の初期化 */
+        mHandspinnerHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                HandspinnerState sts = HandspinnerState.values()[msg.what];
+                switch (sts) {
+                    case ON:
+                        isFinishedAuthentication(getApplicationContext());
+                        break;
+                    case OFF:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+    }
+
+    private void initViews() {
         mBtManager = (BluetoothManager)getSystemService(BLUETOOTH_SERVICE);
         mBtAdapter = mBtManager.getAdapter();
         if ((mBtAdapter == null) || !mBtAdapter.isEnabled()) {
             Toast.makeText(getApplicationContext(), "Warning: Bluetooth Disabled.", Toast.LENGTH_SHORT).show();
             finish();
         }
-
+        buttonGoToMainactivity = (Button)findViewById(R.id.buttonGoToMainactivity);
+        buttonGoToMainactivity.setOnClickListener(buttonClickListener);
+        textViewAuthenication = (TextView)findViewById(R.id.textViewAuthenication);
+        mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
+        buttonRegisterKey = (Button)findViewById(R.id.buttonRegisterKey);
+        buttonRegisterKey.setOnClickListener(buttonClickListener);
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
-        mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);
-        mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
-        mGraphAirp = (LineGraph)findViewById(R.id.graphAirp);
-        mGraphTemp = (LineGraph)findViewById(R.id.graphTemp);
-        mTextStatus = (TextView)findViewById(R.id.textStatus);
-        mTextLatestAirp = (TextView)findViewById(R.id.textViewLatestAirp);
-        mTextLatestTemp = (TextView)findViewById(R.id.textViewLatestTemp);
-
-        mButtonConnect.setOnClickListener(buttonClickLinstener);
-        mButtonDisconnect.setOnClickListener(buttonClickLinstener);
-
-        mCheckBoxActive.setOnClickListener(checkboxClickListener);
-
-        /* TODO */
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                mTextStatus.setText((String)msg.obj);
-                AppState sts = AppState.values()[msg.what];
-                switch (sts) {
-                    case INIT:
-                    case BLE_SCAN_FAILED:
-                    case BLE_CLOSED:
-                    case BLE_DISCONNECTED:
-                        mButtonConnect.setEnabled(true);
-                        mButtonDisconnect.setEnabled(false);
-                        mCheckBoxActive.setEnabled(false);
-                        mCheckBoxActive.setChecked(false);
-                        break;
-                    case BLE_SRV_NOT_FOUND:
-                    case BLE_NOTIF_REGISTER_FAILED:
-                    case BLE_SCANNING:
-                        mButtonConnect.setEnabled(false);
-                        mButtonDisconnect.setEnabled(true);
-                        mCheckBoxActive.setEnabled(false);
-                        mCheckBoxActive.setChecked(false);
-                        break;
-                    case BLE_CONNECTED:
-                    case BLE_WRITE:
-                        mButtonConnect.setEnabled(false);
-                        mButtonDisconnect.setEnabled(true);
-                        mCheckBoxActive.setEnabled(true);
-                        break;
-                    case BLE_UPDATE_VALUE:
-                        ArrayList<LinePoint> ap_points = mGraphAirp.getLine(0).getPoints();
-                        ArrayList<LinePoint> tp_points = mGraphTemp.getLine(0).getPoints();
-
-                        //Temperature
-                        ByteBuffer buff;
-                        buff = ByteBuffer.wrap(mRecvValue, 0, 2);
-                        buff.order(ByteOrder.LITTLE_ENDIAN);
-                        short rt = buff.getShort();
-                        LinePoint rt_point = new LinePoint();
-                        rt_point.setY((double) rt / 100);
-                        tp_points.add(rt_point);
-                        mTextLatestTemp.setText(String.format("Latest: %5.2f digC", (float)rt / 100));
-
-                        //Airpressure
-                        buff = ByteBuffer.wrap(mRecvValue, 2, 4);
-                        buff.order(ByteOrder.LITTLE_ENDIAN);
-                        int ra = buff.getInt();
-                        LinePoint ra_point = new LinePoint();
-                        ra_point.setY((double) ra / 256);
-                        ap_points.add(ra_point);
-                        mTextLatestAirp.setText(String.format("Latest: %7.2f hPa", (float)ra / 25600));
-
-                        int cnt_points = 20;
-                        chopLinePoints(mGraphTemp, tp_points, cnt_points);
-                        chopLinePoints(mGraphAirp, ap_points, cnt_points);
-
-                        mGraphTemp.invalidate();
-                        mGraphAirp.invalidate();
-                        break;
-                }
-            }
-        };
-    }
-    
-    private void chopLinePoints(LineGraph graph, ArrayList<LinePoint> points, int cnt) {
-        int size;
-        size = points.size();
-        if (size > cnt) {
-            for (int i = 0; i < (size - cnt); i++) {
-                points.remove(0);
-            }
-        }
-        float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
-        for (int i = 0; i < points.size(); i++) {
-            points.get(i).setX(i);
-            if (min > points.get(i).getY()) {
-                min = points.get(i).getY();
-            }
-            if (max < points.get(i).getY()) {
-                max = points.get(i).getY();
-            }
-        }
-        float padding = (float)((max - min) * 2);
-        graph.setRangeY(min - padding, max + padding);
+        mButtonConnect.setOnClickListener(buttonClickListener);
+        mButtonForceAuthentication = (Button)findViewById(R.id.buttonForceAuthentication);
+        mButtonForceAuthentication.setOnClickListener(buttonClickListener);
+        checkBoxAuthenticate = (CheckBox)findViewById(R.id.checkBoxActive);
+        checkBoxAuthenticate.setOnClickListener(checkboxClickListener);
     }
 
     @Override
@@ -223,26 +183,9 @@ public class AirpressureActivity extends AppCompatActivity {
         super.onStart();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         setStatus(AppState.INIT);
-
-        mCheckBoxActive.setChecked(false);
-        mCheckBoxActive.setEnabled(false);
-
-        Line l;
-        //Airpressure
-        mGraphAirp.setRangeX(0, 19);
-        mGraphAirp.setRangeY(970, 1050);
-        l = new Line();
-        l.setColor(Color.BLUE);
-        mGraphAirp.addLine(l);
-
-        //Temperature
-        mGraphTemp.setRangeX(0, 19);
-        mGraphTemp.setRangeY(-10, 50);
-        l = new Line();
-        l.setColor(Color.RED);
-        mGraphTemp.addLine(l);
+        checkBoxAuthenticate.setChecked(false);
+        checkBoxAuthenticate.setEnabled(false);
     }
 
     @Override
@@ -252,24 +195,25 @@ public class AirpressureActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    /* Event handler */
-    private View.OnClickListener buttonClickLinstener = new View.OnClickListener() {
+
+    public View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            Intent intent;
             switch (v.getId()) {
+                case R.id.buttonGoToMainactivity:
+                    intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.buttonRegisterKey:
+                    intent = new Intent(getApplicationContext(), RegisterKeyActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.buttonForceAuthentication:
+                    setHandspinnerStatus(HandspinnerState.ON);
+                    break;
                 case R.id.buttonConnect:
                     connectBLE();
-                    break;
-                case R.id.buttonDisconnect:
-                    switch (getStats()) {
-                        case BLE_SCANNING:
-                            mBtAdapter.stopLeScan(mLeScanCallback);
-                            setStatus(AppState.BLE_CLOSED);
-                            break;
-                        default:
-                            disconnectBLE();
-                            break;
-                    }
                     break;
             }
         }
@@ -287,12 +231,70 @@ public class AirpressureActivity extends AppCompatActivity {
         }
     };
 
-    /* BLEスキャンコールバック */
+    private void updateValues() {
+        short grx, gry, grz, arx, ary, arz, mrx, mry, mrz;
+        int recv_len;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            recv_len = mRecvValue.length;
+        } else {
+            recv_len = 18;
+        }
+        for (int offset = 0; offset < recv_len; offset += 18) {
+            mHandspinnerValues = new HandspinnerValues();
+            /* Convert byte array to values. */
+            ByteBuffer buff;
+            //Gyro X
+            buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            grx = buff.getShort();
+            mHandspinnerValues.mKeyGyroX = (double) grx / 16.4;
+            //Gyro Y
+            buff = ByteBuffer.wrap(mRecvValue, offset + 2, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            gry = buff.getShort();
+            mHandspinnerValues.mKeyGyroY = (double) gry / 16.4;
+            //Gyro Z
+            buff = ByteBuffer.wrap(mRecvValue, offset + 4, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            grz = buff.getShort();
+            mHandspinnerValues.mKeyGyroZ = (double) grz / 16.4;
+            //Accel X
+            buff = ByteBuffer.wrap(mRecvValue, offset + 6, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            arx = buff.getShort();
+            mHandspinnerValues.mKeyAccelX = (double) arx*10 / 2048;
+            //Accel Y
+            buff = ByteBuffer.wrap(mRecvValue, offset + 8, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            ary = buff.getShort();
+            mHandspinnerValues.mKeyAccelY = (double) ary*10 / 2048;
+            //Accel Z
+            buff = ByteBuffer.wrap(mRecvValue, offset + 10, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            arz = buff.getShort();
+            mHandspinnerValues.mKeyAccelZ = (double) arz*10 / 2048;
+            //Magneto X
+            buff = ByteBuffer.wrap(mRecvValue, offset + 12, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            mrx = buff.getShort();
+            mHandspinnerValues.mKeyMagnX = mrx;
+            //Magneto Y
+            buff = ByteBuffer.wrap(mRecvValue, offset + 14, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            mry = buff.getShort();
+            mHandspinnerValues.mKeyMagnY = mry;
+            //Magneto Z
+            buff = ByteBuffer.wrap(mRecvValue, offset + 16, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            mrz = buff.getShort();
+            mHandspinnerValues.mKeyMagnZ = mrz;
+        }
+    }
+
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (DEVICE_NAME.equals(device.getName())) {
-                //HyouRowGanを発見
                 setStatus(AppState.BLE_DEV_FOUND);
                 mBtAdapter.stopLeScan(this);
                 mBtGatt = device.connectGatt(getApplicationContext(), false, mBluetoothGattCallback);
@@ -300,7 +302,6 @@ public class AirpressureActivity extends AppCompatActivity {
         }
     };
 
-    /* GATTコールバック */
     private BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -320,11 +321,10 @@ public class AirpressureActivity extends AppCompatActivity {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            BluetoothGattService service = gatt.getService(UUID.fromString(UUID_SERVICE_APSS));
+            BluetoothGattService service = gatt.getService(UUID.fromString(UUID_SERVICE_MSS));
             if (service == null) {
                 //サービスが見つからない
                 setStatus(AppState.BLE_SRV_NOT_FOUND);
-                return;
             } else {
                 //サービスが見つかった
                 setStatus(AppState.BLE_SRV_FOUND);
@@ -336,15 +336,17 @@ public class AirpressureActivity extends AppCompatActivity {
                 }
             }
             mGatt = gatt;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                gatt.requestMtu(40);
+            }
             setStatus(AppState.BLE_CONNECTED);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            //super.onCharacteristicChanged(gatt, characteristic);
             if (UUID_CHARACTERISTIC_VALUE.equals(characteristic.getUuid().toString())) {
                 byte read_data[] = characteristic.getValue();
-                mRecvValue = Arrays.copyOf(read_data, 6);
+                mRecvValue = Arrays.copyOf(read_data, 36);
                 setStatus(AppState.BLE_UPDATE_VALUE);
             }
         }
@@ -356,8 +358,7 @@ public class AirpressureActivity extends AppCompatActivity {
         }
     };
 
-    private void connectBLE()
-    {
+    private void connectBLE() {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -373,8 +374,7 @@ public class AirpressureActivity extends AppCompatActivity {
         setStatus(AppState.BLE_SCANNING);
     }
 
-    private void disconnectBLE()
-    {
+    private void disconnectBLE() {
         if (mBtGatt != null) {
             disableBLENotification();
 
@@ -386,8 +386,7 @@ public class AirpressureActivity extends AppCompatActivity {
         }
     }
 
-    private void enableBLENotification()
-    {
+    private void enableBLENotification() {
         if (mGatt.setCharacteristicNotification(mCharacteristic, true)) {
             BluetoothGattDescriptor desc = mCharacteristic.getDescriptor(UUID.fromString(UUID_CLIENT_CHARACTERISTIC_CONFIG));
             desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -399,8 +398,7 @@ public class AirpressureActivity extends AppCompatActivity {
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
 
-    private void disableBLENotification()
-    {
+    private void disableBLENotification() {
         BluetoothGattDescriptor desc = mCharacteristic.getDescriptor(UUID.fromString(UUID_CLIENT_CHARACTERISTIC_CONFIG));
         desc.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
         if (mGatt.writeDescriptor(desc)) {
@@ -410,5 +408,17 @@ public class AirpressureActivity extends AppCompatActivity {
             }
         }
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
+    }
+
+    private void isFinishedAuthentication(final Context c) {
+        mHandspinnerHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(HandspinnerState.ON.equals(getHandspinnerStats())){
+                    Intent intent = new Intent(c, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
+        },300);
     }
 }
