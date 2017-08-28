@@ -20,8 +20,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".GpioActivity"
             android:screenOrientation="portrait" />
@@ -83,8 +82,9 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".HandspinnerAuthenticationActivity"></activity>
-        <activity android:name=".RegisterKeyActivity"></activity>
+        <activity android:name=".HandspinnerAuthenticationActivity" />
+        <activity android:name=".RegisterKeyActivity" />
+        <activity android:name=".MotionSensorsActivity"></activity>
     </application>
 
 </manifest>

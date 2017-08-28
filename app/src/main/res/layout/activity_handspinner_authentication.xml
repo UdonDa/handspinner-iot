@@ -15,50 +15,65 @@
         android:checked="false" />
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:height="400dp"
-        android:id="@+id/textViewAuthenication"
-        android:layout_below="@+id/checkBoxActive"
-        android:text="認証Log"/>
-
-    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MainActivity"
-        android:layout_below="@+id/textViewAuthenication"
-        android:id="@+id/buttonGoToMainactivity"
-        android:layout_gravity="bottom"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Direction of rotation"
+        android:id="@+id/textView23"
+        android:layout_below="@+id/checkBoxActive" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewDirectionOfRotation"
+        android:layout_below="@+id/textView23"
+        android:text="Direction of rotation"
+        android:height="50dp"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Rpm"
+        android:id="@+id/textView21"
+        android:layout_below="@+id/textViewDirectionOfRotation" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewRpm"
+        android:layout_below="@+id/textView21"
+        android:text="Rpm"
+        android:height="50dp"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="鍵登録"
         android:id="@+id/buttonRegisterKey"
-        android:layout_toRightOf="@+id/buttonGoToMainactivity"
-        android:layout_below="@+id/textViewAuthenication"/>
+        android:layout_below="@+id/buttonConnect"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="connect"
         android:id="@+id/buttonConnect"
-        android:layout_above="@+id/buttonGoToMainactivity"/>
+        android:layout_below="@+id/textViewRpm"/>
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textViewBleStatus"
-        android:layout_above="@+id/buttonRegisterKey"
         android:layout_toRightOf="@+id/buttonConnect"
         android:text="not connected"
-        android:height="30dp"/>
+        android:height="30dp"
+        android:layout_below="@id/textViewRpm"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="強制認証デバッグ"
         android:id="@+id/buttonForceAuthentication"
-        android:layout_toRightOf="@+id/buttonRegisterKey"
-        android:layout_below="@+id/textViewAuthenication"/>
+        android:layout_below="@+id/buttonRegisterKey"/>
 </RelativeLayout>

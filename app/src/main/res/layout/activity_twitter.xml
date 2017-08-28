@@ -4,13 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#00bfff"
     tools:context="com.cerevo.blueninja.hyourowgan_ble_sample.TwitterActivity">
 
-    <Button
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:text="ハンドスピナー \n\n\n\n \n横\nか\nら\n回\nす\nか\n  \n\n\n\n下から回すか"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/buttonVerifiedTwitter"
-        android:text="ツイッター認証"/>
+        android:text="ツイッター認証"
+        android:src="@drawable/twitter_login"
+        android:background="#00bfff"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:radius="6dp" />/>
 
 
 </RelativeLayout>

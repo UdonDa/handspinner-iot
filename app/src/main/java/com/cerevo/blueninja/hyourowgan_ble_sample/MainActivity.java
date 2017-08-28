@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent;
             switch (v.getId()) {
                 case R.id.buttonShowMotionSensor:
-                    intent = new Intent(getApplicationContext(), MotionSensorActivity.class);
+                    intent = new Intent(getApplicationContext(), MotionSensorsActivity.class);
                     startActivity(intent);
                     break;
                 case R.id.buttonSearchGourmet:

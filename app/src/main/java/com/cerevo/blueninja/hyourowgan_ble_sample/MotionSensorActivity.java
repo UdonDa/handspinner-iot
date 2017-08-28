@@ -31,21 +31,13 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class MotionSensorActivity extends AppCompatActivity {
-    //BLEスキャンタイムアウト
     private static final int SCAN_TIMEOUT = 20000;
-    //接続対象のデバイス名
     private static final String DEVICE_NAME = "HyouRowGan00";
-    /* UUIDs */
-    //BlueNinja Motion sensor Service
-    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";
-    //Motion sensor values.
-    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";
-    //キャラクタリスティック設定UUID
-    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-    //ログのTAG
+    private static final String UUID_SERVICE_MSS = "00060000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
+    private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
+    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
     private static final String LOG_TAG = "HRG_MSS";
 
-    /* State */
     private enum AppState {
         INIT,
         BLE_SCANNING,
@@ -66,9 +58,7 @@ public class MotionSensorActivity extends AppCompatActivity {
     }
 
     private AppState mAppState = AppState.INIT;
-    //状態変更
-    private void setStatus(AppState state)
-    {
+    private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
@@ -76,7 +66,6 @@ public class MotionSensorActivity extends AppCompatActivity {
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    //状態取得
     private AppState getStats()
     {
         return mAppState;
@@ -84,20 +73,17 @@ public class MotionSensorActivity extends AppCompatActivity {
 
     private byte[] mRecvValue;
 
-    /* メンバ変数 */
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
     private HandspinnerValues mHandspinnerValues;
-
     private Handler mHandler;
-    private TextView mTextViewGyro, mTextViewAccel, mTextViewMagm, mTextViewRotat;
-    private Button mButtonConnect;
-    private Button mButtonDisconnect;
+
+    private TextView mTextViewGyro, mTextViewAccel, mTextViewMagm, mTextStatus, mTextViewTotalRotat, mTextViewRpm, mTextViewLastPositionStopped, mTextViewDirectionOfRotation;
+    private Button mButtonConnect,mButtonDisconnect;
     private CheckBox mCheckBoxActive;
-    private TextView mTextStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,72 +129,33 @@ public class MotionSensorActivity extends AppCompatActivity {
     }
 
     private void updateValues() {
-        short grx, gry, grz, arx, ary, arz, mrx, mry, mrz;
-        int recv_len;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            recv_len = mRecvValue.length;
-        } else {
-            recv_len = 18;
-        }
-        for (int offset = 0; offset < recv_len; offset += 18) {
+        /*
+        //Temperature
+        ByteBuffer buff;
+        buff = ByteBuffer.wrap(mRecvValue, 0, 2);
+        buff.order(ByteOrder.LITTLE_ENDIAN);
+        short rt = buff.getShort();
 
-            mHandspinnerValues = new HandspinnerValues();
-            /* Convert byte array to values. */
-            ByteBuffer buff;
-            //Gyro X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            grx = buff.getShort();
-            mHandspinnerValues.mGyroX = (double) grx / 16.4;
-            //Gyro Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 2, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            gry = buff.getShort();
-            mHandspinnerValues.mGyroY = (double) gry / 16.4;
-            //Gyro Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 4, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            grz = buff.getShort();
-            mHandspinnerValues.mGyroZ = (double) grz / 16.4;
-            //Accel X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 6, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arx = buff.getShort();
-            mHandspinnerValues.mAccelX = (double) arx*10 / 2048;
-            //Accel Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 8, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            ary = buff.getShort();
-            mHandspinnerValues.mAccelY = (double) ary*10 / 2048;
-            //Accel Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 10, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arz = buff.getShort();
-            mHandspinnerValues.mAccelZ = (double) arz*10 / 2048;
-            //Magneto X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 12, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrx = buff.getShort();
-            mHandspinnerValues.mMagnX = mrx;
-            //Magneto Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 14, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mry = buff.getShort();
-            mHandspinnerValues.mMagnY = mry;
-            //Magneto Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 16, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrz = buff.getShort();
-            mHandspinnerValues.mMagnZ = mrz;
+        mTextLatestTemp.setText(String.format("Latest: %5.2f digC", (float)rt / 100));
+
+        //Airpressure
+        buff = ByteBuffer.wrap(mRecvValue, 2, 4);
+        buff.order(ByteOrder.LITTLE_ENDIAN);
+        int ra = buff.getInt();
+        LinePoint ra_point = new LinePoint();
+        ra_point.setY((double) ra / 256);
+        ap_points.add(ra_point);
+        mTextLatestAirp.setText(String.format("Latest: %7.2f hPa", (float)ra / 25600));
+
+        int cnt_points = 20;
+        chopLinePoints(mGraphTemp, tp_points, cnt_points);
+        chopLinePoints(mGraphAirp, ap_points, cnt_points);
+
+        mGraphTemp.invalidate();
+        mGraphAirp.invalidate();*/
 
 
-            mTextViewGyro.setText(" x: " + String.valueOf(mHandspinnerValues.mGyroX) + "\n y: " + String.valueOf(mHandspinnerValues.mGyroY) + "\n z: "+ String.valueOf(mHandspinnerValues.mGyroZ));
-            mTextViewAccel.setText(" x: "+ String.valueOf(mHandspinnerValues.mAccelX) + "\n y: " + String.valueOf(mHandspinnerValues.mAccelY) + "\n z: " +String.valueOf(mHandspinnerValues.mAccelZ) + " [m/s^2]");
-            mTextViewMagm.setText(" x: " + String.valueOf(mHandspinnerValues.mMagnX) + "\n y: " + String.valueOf(mHandspinnerValues.mMagnY) + "\n z: "+ String.valueOf(mHandspinnerValues.mMagnZ));
-
-        }
     }
-
 
     @Override
     protected void onStart() {
@@ -229,8 +176,6 @@ public class MotionSensorActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-
-    /* Event handler */
     private View.OnClickListener buttonClickLinstener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -265,12 +210,10 @@ public class MotionSensorActivity extends AppCompatActivity {
         }
     };
 
-    /* BLEスキャンコールバック */
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (DEVICE_NAME.equals(device.getName())) {
-                //HyouRowGanを発見
                 setStatus(AppState.BLE_DEV_FOUND);
                 mBtAdapter.stopLeScan(this);
                 mBtGatt = device.connectGatt(getApplicationContext(), false, mBluetoothGattCallback);
@@ -278,7 +221,6 @@ public class MotionSensorActivity extends AppCompatActivity {
         }
     };
 
-    /* GATTコールバック */
     private BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -396,10 +338,10 @@ public class MotionSensorActivity extends AppCompatActivity {
             finish();
         }
 
-        mTextViewGyro = (TextView)findViewById(R.id.textViewGyro);
-        mTextViewAccel = (TextView)findViewById(R.id.textViewAccelometer);
-        mTextViewMagm = (TextView)findViewById(R.id.textViewMagnetometer);
-        mTextViewRotat = (TextView) findViewById(R.id.textViewRotationNumber);
+        mTextViewTotalRotat = (TextView)findViewById(R.id.textViewTotalRotation);
+        mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
+        mTextViewLastPositionStopped = (TextView)findViewById(R.id.textViewLastPositionStopped);
+        mTextViewDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
 
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
         mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);

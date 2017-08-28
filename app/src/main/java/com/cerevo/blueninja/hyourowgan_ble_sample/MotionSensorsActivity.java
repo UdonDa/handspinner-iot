@@ -1,5 +1,6 @@
 package com.cerevo.blueninja.hyourowgan_ble_sample;
 
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -9,10 +10,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +23,9 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.echo.holographlibrary.Line;
+import com.echo.holographlibrary.LineGraph;
+import com.echo.holographlibrary.LinePoint;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -33,15 +33,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class HandspinnerAuthenticationActivity extends AppCompatActivity {
-
-    Button mButtonConnect, buttonRegisterKey, mButtonForceAuthentication;
-    TextView textViewAuthenication ,mTextViewStatus, mTextViewDirectionOfRotation, mTextViewRpm;
-    CheckBox checkBoxAuthenticate;
-
+public class MotionSensorsActivity extends AppCompatActivity {
     private static final int SCAN_TIMEOUT = 20000;
     private static final String DEVICE_NAME = "HyouRowGan00";
-
     private static final String UUID_SERVICE_APSS = "00060000-6727-11e5-988e-f07959ddcdfb";
     private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";
     private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
@@ -65,147 +59,110 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         BLE_UPDATE_VALUE,
         BLE_CLOSED
     }
-    private enum HandspinnerState {
-        ON,
-        OFF
-    }
     private AppState mAppState = AppState.INIT;
-    private HandspinnerState mHandspinnerState = HandspinnerState.OFF;
     private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
+
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    private void setHandspinnerStatus(HandspinnerState state) {
-        Message msg = new Message();
-        msg.what = state.ordinal();
-        msg.obj = state.name();
-        mHandspinnerState = state;
-        mHandspinnerHandler.sendMessage(msg);
+    private AppState getStats()
+    {
+        return mAppState;
     }
 
+    private byte[] mRecvValue;
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
-    private HandspinnerValues mHandspinnerValues;
-    private Handler mHandler,mHandspinnerHandler;
 
-    private AppState getStats() {
-        return mAppState;
-    }
-    private HandspinnerState getHandspinnerStats() {
-        return mHandspinnerState;
-    }
-    private byte[] mRecvValue;
+    private Handler mHandler;
+    private HandspinnerValues mHandspinnerValues;
+
+    private Button mButtonConnect;
+    private Button mButtonDisconnect;
+    private CheckBox mCheckBoxActive;
+
+    private TextView mTextStatus,mTextDirectionOfRotation,mTextRpm,mTextLastStopped,mTextTotalRotation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_handspinner_authentication);
-        initViews();
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                mTextViewStatus.setText((String)msg.obj);
-                AppState sts = AppState.values()[msg.what];
-                switch (sts) {
-                    case INIT:
-                    case BLE_SCAN_FAILED:
-                        break;
-                    case BLE_CLOSED:
-                    case BLE_DISCONNECTED:
-                        mButtonConnect.setEnabled(true);
-                        checkBoxAuthenticate.setEnabled(false);
-                        checkBoxAuthenticate.setChecked(false);
-                        break;
-                    case BLE_SRV_NOT_FOUND:
-                    case BLE_NOTIF_REGISTER_FAILED:
-                    case BLE_SCANNING:
-                        mButtonConnect.setEnabled(false);
-                        checkBoxAuthenticate.setEnabled(false);
-                        checkBoxAuthenticate.setChecked(false);
-                        break;
-                    case BLE_CONNECTED:
-                    case BLE_WRITE:
-                        mButtonConnect.setEnabled(false);
-                        checkBoxAuthenticate.setEnabled(true);
-                        break;
-                    case BLE_UPDATE_VALUE:
-                        mHandspinnerValues = new HandspinnerValues();
-                        ByteBuffer buff;
-                        buff = ByteBuffer.wrap(mRecvValue, 0, 2);
-                        buff.order(ByteOrder.LITTLE_ENDIAN);
-                        short rt = buff.getShort();
-                        //mTextLastStopped.setText("停止位置："+ rt/256);
-                        int mDirection = rt % 256;
-                        mTextViewDirectionOfRotation.setText("回転方向: " + rt%256 );
+        setContentView(R.layout.activity_motion_sensors);
 
-                        buff = ByteBuffer.wrap(mRecvValue, 2, 4);
-                        buff.order(ByteOrder.LITTLE_ENDIAN);
-                        int ra = buff.getInt();
-                        //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
-                        float rpm = ra % (256*256);
-                        mTextViewRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
-
-                        //認証
-                        if(mDirection == mHandspinnerValues.mKeyDirectionOfRotation) {
-                            if((rpm < mHandspinnerValues.mKeyRpm + 5) || (rpm > mHandspinnerValues.mKeyRpm - 5) ) {
-                            //if(rpm == mHandspinnerValues.mKeyRpm) {
-
-                                setHandspinnerStatus(HandspinnerState.ON);
-                            }
-
-                        }
-
-                        break;
-                }
-            }
-        };
-
-        mHandspinnerHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                HandspinnerState sts = HandspinnerState.values()[msg.what];
-                switch (sts) {
-                    case ON:
-                        showToast("認証成功！");
-                        isFinishedAuthentication(getApplicationContext());
-                        break;
-                    case OFF:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-    }
-
-    private void initViews() {
         mBtManager = (BluetoothManager)getSystemService(BLUETOOTH_SERVICE);
         mBtAdapter = mBtManager.getAdapter();
         if ((mBtAdapter == null) || !mBtAdapter.isEnabled()) {
             Toast.makeText(getApplicationContext(), "Warning: Bluetooth Disabled.", Toast.LENGTH_SHORT).show();
             finish();
         }
-        mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
-        mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
-        mTextViewDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
-        buttonRegisterKey = (Button)findViewById(R.id.buttonRegisterKey);
-        buttonRegisterKey.setOnClickListener(buttonClickListener);
-        mButtonConnect = (Button)findViewById(R.id.buttonConnect);
-        mButtonConnect.setOnClickListener(buttonClickListener);
-        mButtonForceAuthentication = (Button)findViewById(R.id.buttonForceAuthentication);
-        mButtonForceAuthentication.setOnClickListener(buttonClickListener);
-        checkBoxAuthenticate = (CheckBox)findViewById(R.id.checkBoxActive);
-        checkBoxAuthenticate.setOnClickListener(checkboxClickListener);
 
-        mHandspinnerValues = new HandspinnerValues();
-        mHandspinnerValues.mKeyRpm = 700;
-        mHandspinnerValues.mKeyDirectionOfRotation = 1;
+        mButtonConnect = (Button)findViewById(R.id.buttonConnect);
+        mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);
+        mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
+        mTextStatus = (TextView)findViewById(R.id.textStatus);
+        mTextDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
+        mTextRpm=(TextView)findViewById(R.id.textViewRpm);
+        mTextLastStopped = (TextView)findViewById(R.id.textViewLastPositionStopped);
+        mTextTotalRotation = (TextView)findViewById(R.id.textViewTotalRotation);
+
+        mButtonConnect.setOnClickListener(buttonClickLinstener);
+        mButtonDisconnect.setOnClickListener(buttonClickLinstener);
+
+        mCheckBoxActive.setOnClickListener(checkboxClickListener);
+
+        /* TODO */
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                mTextStatus.setText((String)msg.obj);
+                AppState sts = AppState.values()[msg.what];
+                switch (sts) {
+                    case INIT:
+                    case BLE_SCAN_FAILED:
+                    case BLE_CLOSED:
+                    case BLE_DISCONNECTED:
+                        mButtonConnect.setEnabled(true);
+                        mButtonDisconnect.setEnabled(false);
+                        mCheckBoxActive.setEnabled(false);
+                        mCheckBoxActive.setChecked(false);
+                        break;
+                    case BLE_SRV_NOT_FOUND:
+                    case BLE_NOTIF_REGISTER_FAILED:
+                    case BLE_SCANNING:
+                        mButtonConnect.setEnabled(false);
+                        mButtonDisconnect.setEnabled(true);
+                        mCheckBoxActive.setEnabled(false);
+                        mCheckBoxActive.setChecked(false);
+                        break;
+                    case BLE_CONNECTED:
+                    case BLE_WRITE:
+                        mButtonConnect.setEnabled(false);
+                        mButtonDisconnect.setEnabled(true);
+                        mCheckBoxActive.setEnabled(true);
+                        break;
+                    case BLE_UPDATE_VALUE:
+                        mHandspinnerValues = new HandspinnerValues();
+                        ByteBuffer buff;
+                        buff = ByteBuffer.wrap(mRecvValue, 0, 4);
+                        buff.order(ByteOrder.LITTLE_ENDIAN);
+                        short rt = buff.getShort();
+                        mTextLastStopped.setText("停止位置："+ rt/256);
+                        mTextDirectionOfRotation.setText("回転方向: " + rt%256 );
+
+                        buff = ByteBuffer.wrap(mRecvValue, 2, 4);
+                        buff.order(ByteOrder.LITTLE_ENDIAN);
+                        int ra = buff.getInt();
+                        mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
+                        mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
+                        break;
+                }
+            }
+        };
     }
 
     @Override
@@ -216,8 +173,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
         setStatus(AppState.INIT);
 
-        checkBoxAuthenticate.setChecked(false);
-        checkBoxAuthenticate.setEnabled(false);
+        mCheckBoxActive.setChecked(false);
+        mCheckBoxActive.setEnabled(false);
     }
 
     @Override
@@ -227,21 +184,24 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-
-    public View.OnClickListener buttonClickListener = new View.OnClickListener() {
+    /* Event handler */
+    private View.OnClickListener buttonClickLinstener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent;
             switch (v.getId()) {
-                case R.id.buttonRegisterKey:
-                    intent = new Intent(getApplicationContext(), RegisterKeyActivity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.buttonForceAuthentication:
-                    setHandspinnerStatus(HandspinnerState.ON);
-                    break;
                 case R.id.buttonConnect:
                     connectBLE();
+                    break;
+                case R.id.buttonDisconnect:
+                    switch (getStats()) {
+                        case BLE_SCANNING:
+                            mBtAdapter.stopLeScan(mLeScanCallback);
+                            setStatus(AppState.BLE_CLOSED);
+                            break;
+                        default:
+                            disconnectBLE();
+                            break;
+                    }
                     break;
             }
         }
@@ -259,7 +219,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
     };
 
-
+    /* BLEスキャンコールバック */
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
@@ -272,6 +232,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
     };
 
+    /* GATTコールバック */
     private BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -327,7 +288,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
     };
 
-    private void connectBLE() {
+    private void connectBLE()
+    {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -343,7 +305,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         setStatus(AppState.BLE_SCANNING);
     }
 
-    private void disconnectBLE() {
+    private void disconnectBLE()
+    {
         if (mBtGatt != null) {
             disableBLENotification();
 
@@ -355,7 +318,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
     }
 
-    private void enableBLENotification() {
+    private void enableBLENotification()
+    {
         if (mGatt.setCharacteristicNotification(mCharacteristic, true)) {
             BluetoothGattDescriptor desc = mCharacteristic.getDescriptor(UUID.fromString(UUID_CLIENT_CHARACTERISTIC_CONFIG));
             desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -367,7 +331,8 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
 
-    private void disableBLENotification() {
+    private void disableBLENotification()
+    {
         BluetoothGattDescriptor desc = mCharacteristic.getDescriptor(UUID.fromString(UUID_CLIENT_CHARACTERISTIC_CONFIG));
         desc.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
         if (mGatt.writeDescriptor(desc)) {
@@ -378,16 +343,4 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         }
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
-
-    private void isFinishedAuthentication(final Context c) {
-        if(HandspinnerState.ON.equals(getHandspinnerStats())) {
-            Intent intent = new Intent(c, MainActivity.class);
-            startActivity(intent);
-        }
-    }
-
-    private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-    }
-
 }

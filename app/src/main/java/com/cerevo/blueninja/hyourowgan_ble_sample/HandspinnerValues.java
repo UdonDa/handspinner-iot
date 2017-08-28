@@ -7,13 +7,14 @@ package com.cerevo.blueninja.hyourowgan_ble_sample;
 public class HandspinnerValues {
     HandspinnerValues(){}
 
-    public double mGyroX, mGyroY, mGyroZ;
-    public double mAccelX, mAccelY, mAccelZ;
-    public double mMagnX, mMagnY, mMagnZ;
 
-    public double mKeyGyroX, mKeyGyroY, mKeyGyroZ;
-    public double mKeyAccelX, mKeyAccelY, mKeyAccelZ;
-    public double mKeyMagnX, mKeyMagnY, mKeyMagnZ;
+    public int mTotalRotat;
+    public int mRpm;
+    public int mLastPositionStopped;//(0 ~ 7が入る)
+    public int mDirectionOfRotation;
+
+    public int mKeyDirectionOfRotation;
+    public int mKeyRpm;
 
     public Double mLat;
     public Double mLng;

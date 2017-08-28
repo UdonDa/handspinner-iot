@@ -9,6 +9,8 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -33,8 +35,8 @@ import java.util.UUID;
 
 
 public class RegisterKeyActivity extends AppCompatActivity {
-    private Button mButtonConnect, mButtonRegisterKey;
-    private TextView mTextViewValueGyro, mTextViewValueAccel, mTextViewValueMagm, mTextViewValueRotationNum, mTextViewStatus;
+    private Button mButtonConnect, mButtonRegisterKey, mButtonForceMakeKey;
+    private TextView mTextViewStatus, mTextViewRpm,mTextViewDirectionOfRotation;
     private CheckBox mCheckBoxActive;
 
     private static final int SCAN_TIMEOUT = 20000;
@@ -61,7 +63,12 @@ public class RegisterKeyActivity extends AppCompatActivity {
         BLE_UPDATE_VALUE,
         BLE_CLOSED
     }
+    private enum AppHandspinnerState {
+        ON,
+        OFF
+    }
     private AppState mAppState = AppState.INIT;
+    private AppHandspinnerState mAppHandspinnerState = AppHandspinnerState.OFF;
     private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
@@ -70,17 +77,28 @@ public class RegisterKeyActivity extends AppCompatActivity {
         mAppState = state;
         mHandler.sendMessage(msg);
     }
+    private void setHandspinnerStatus(AppHandspinnerState state) {
+        Message msg = new Message();
+        msg.what = state.ordinal();
+        msg.obj = state.name();
+
+        mAppHandspinnerState = state;
+        mHandler.sendMessage(msg);
+    }
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
     private HandspinnerValues mHandspinnerValues;
-    private Handler mHandler;
+    private Handler mHandler, mHandspinnerHandler;
 
     private AppState getStats()
     {
         return mAppState;
+    }
+    private AppHandspinnerState getHandspinnerStats() {
+        return mAppHandspinnerState;
     }
 
     private byte[] mRecvValue;
@@ -123,6 +141,24 @@ public class RegisterKeyActivity extends AppCompatActivity {
                 }
             }
         };
+
+
+        mHandspinnerHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                AppHandspinnerState sts = AppHandspinnerState.values()[msg.what];
+                switch (sts) {
+                    case ON:
+                        finishedRegisterd(getApplicationContext());
+                        break;
+                    case OFF:
+                        break;
+                }
+            }
+        };
+
+
+
     }
 
     private void initViews() {
@@ -133,14 +169,14 @@ public class RegisterKeyActivity extends AppCompatActivity {
             finish();
         }
 
+        mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
+        mTextViewDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
         mButtonConnect.setOnClickListener(buttonClickLinstener);
+        mButtonForceMakeKey = (Button)findViewById(R.id.buttonForceMakeKey);
+        mButtonForceMakeKey.setOnClickListener(buttonClickLinstener);
         mButtonRegisterKey = (Button)findViewById(R.id.buttonRegisterKey);
         mButtonRegisterKey.setOnClickListener(buttonClickLinstener);
-        mTextViewValueGyro = (TextView)findViewById(R.id.textViewKeyGyro);
-        mTextViewValueAccel = (TextView)findViewById(R.id.textViewKeyAccel);
-        mTextViewValueMagm = (TextView)findViewById(R.id.textViewKeyMagm);
-        mTextViewValueRotationNum = (TextView)findViewById(R.id.textViewKeyRotationNumber);
         mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
         mCheckBoxActive = (CheckBox)findViewById(R.id.checkBoxActive);
         mCheckBoxActive.setOnClickListener(checkboxClickListener);
@@ -176,8 +212,8 @@ public class RegisterKeyActivity extends AppCompatActivity {
 
 
             /*---この下でハンドスピナーの値を入れて行く！---*/
+            /*
             mHandspinnerValues = new HandspinnerValues();
-            /* Convert byte array to values. */
             ByteBuffer buff;
             //Gyro X
             buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
@@ -228,7 +264,10 @@ public class RegisterKeyActivity extends AppCompatActivity {
             mTextViewValueGyro.setText(" x: " + String.valueOf(mHandspinnerValues.mGyroX) + "\n y: " + String.valueOf(mHandspinnerValues.mGyroY) + "\n z: "+ String.valueOf(mHandspinnerValues.mGyroZ));
             mTextViewValueAccel.setText(" x: "+ String.valueOf(mHandspinnerValues.mAccelX) + "\n y: " + String.valueOf(mHandspinnerValues.mAccelY) + "\n z: " +String.valueOf(mHandspinnerValues.mAccelZ) + " [m/s^2]");
             mTextViewValueMagm.setText(" x: " + String.valueOf(mHandspinnerValues.mMagnX) + "\n y: " + String.valueOf(mHandspinnerValues.mMagnY) + "\n z: "+ String.valueOf(mHandspinnerValues.mMagnZ));
+*/
 
+            //mHandspinnerValues.mKeyRpm =
+            setHandspinnerStatus(AppHandspinnerState.ON);
         }
     }
 
@@ -250,6 +289,11 @@ public class RegisterKeyActivity extends AppCompatActivity {
                             break;
                     }
                     break;
+                case R.id.buttonForceMakeKey:
+                    mHandspinnerValues = new HandspinnerValues();
+                    mHandspinnerValues.mKeyDirectionOfRotation = 1;
+                    mHandspinnerValues.mKeyRpm = 100;
+                    setHandspinnerStatus(AppHandspinnerState.ON);
             }
         }
     };
@@ -384,5 +428,22 @@ public class RegisterKeyActivity extends AppCompatActivity {
             }
         }
         setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
+    }
+
+    private void finishedRegisterd(Context c) {
+        mHandspinnerHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showToast("鍵作成完了");
+
+                Intent intent = new Intent(getApplicationContext(), HandspinnerAuthenticationActivity.class);
+                startActivity(intent);
+
+            }
+        }, 5000);
+    }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }
