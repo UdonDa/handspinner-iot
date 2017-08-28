@@ -31,21 +31,13 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class MotionSensorActivity extends AppCompatActivity {
-    //BLEスキャンタイムアウト
     private static final int SCAN_TIMEOUT = 20000;
-    //接続対象のデバイス名
     private static final String DEVICE_NAME = "HyouRowGan00";
-    /* UUIDs */
-    //BlueNinja Motion sensor Service
-    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";
-    //Motion sensor values.
-    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";
-    //キャラクタリスティック設定UUID
-    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-    //ログのTAG
+    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
+    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
+    private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
     private static final String LOG_TAG = "HRG_MSS";
 
-    /* State */
     private enum AppState {
         INIT,
         BLE_SCANNING,
@@ -66,9 +58,7 @@ public class MotionSensorActivity extends AppCompatActivity {
     }
 
     private AppState mAppState = AppState.INIT;
-    //状態変更
-    private void setStatus(AppState state)
-    {
+    private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
@@ -76,7 +66,6 @@ public class MotionSensorActivity extends AppCompatActivity {
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    //状態取得
     private AppState getStats()
     {
         return mAppState;
@@ -84,20 +73,17 @@ public class MotionSensorActivity extends AppCompatActivity {
 
     private byte[] mRecvValue;
 
-    /* メンバ変数 */
     private BluetoothManager mBtManager;
     private BluetoothAdapter mBtAdapter;
     private BluetoothGatt mGatt;
     private BluetoothGatt mBtGatt;
     private BluetoothGattCharacteristic mCharacteristic;
     private HandspinnerValues mHandspinnerValues;
-
     private Handler mHandler;
-    private TextView mTextViewGyro, mTextViewAccel, mTextViewMagm, mTextViewRotat;
-    private Button mButtonConnect;
-    private Button mButtonDisconnect;
+
+    private TextView mTextViewGyro, mTextViewAccel, mTextViewMagm, mTextStatus, mTextViewTotalRotat, mTextViewRpm, mTextViewLastPositionStopped, mTextViewDirectionOfRotation;
+    private Button mButtonConnect,mButtonDisconnect;
     private CheckBox mCheckBoxActive;
-    private TextView mTextStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,7 +195,6 @@ public class MotionSensorActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -229,8 +214,6 @@ public class MotionSensorActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-
-    /* Event handler */
     private View.OnClickListener buttonClickLinstener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -265,12 +248,10 @@ public class MotionSensorActivity extends AppCompatActivity {
         }
     };
 
-    /* BLEスキャンコールバック */
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (DEVICE_NAME.equals(device.getName())) {
-                //HyouRowGanを発見
                 setStatus(AppState.BLE_DEV_FOUND);
                 mBtAdapter.stopLeScan(this);
                 mBtGatt = device.connectGatt(getApplicationContext(), false, mBluetoothGattCallback);
@@ -278,7 +259,6 @@ public class MotionSensorActivity extends AppCompatActivity {
         }
     };
 
-    /* GATTコールバック */
     private BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -399,7 +379,10 @@ public class MotionSensorActivity extends AppCompatActivity {
         mTextViewGyro = (TextView)findViewById(R.id.textViewGyro);
         mTextViewAccel = (TextView)findViewById(R.id.textViewAccelometer);
         mTextViewMagm = (TextView)findViewById(R.id.textViewMagnetometer);
-        mTextViewRotat = (TextView) findViewById(R.id.textViewRotationNumber);
+        mTextViewTotalRotat = (TextView)findViewById(R.id.textViewTotalRotation);
+        mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
+        mTextViewLastPositionStopped = (TextView)findViewById(R.id.textViewLastPositionStopped);
+        mTextViewDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
 
         mButtonConnect = (Button)findViewById(R.id.buttonConnect);
         mButtonDisconnect = (Button)findViewById(R.id.buttonDisconnect);

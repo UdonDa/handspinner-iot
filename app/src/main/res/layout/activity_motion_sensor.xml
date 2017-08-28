@@ -12,17 +12,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Gyro"
-        android:id="@+id/textView10"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
-    <!--
-    <com.echo.holographlibrary.LineGraph
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:id="@+id/graphGyro"
-        android:layout_below="@+id/textView10"
-        android:layout_alignParentStart="true" /> -->
+        android:id="@+id/textView10" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -30,8 +20,7 @@
         android:id="@+id/textViewGyro"
         android:layout_below="@+id/textView10"
         android:text="Gyro"
-        android:height="50dp"
-        />
+        android:height="15dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -39,17 +28,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Accelometer"
         android:id="@+id/textView11"
-        android:layout_below="@+id/textViewGyro"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="2dp" />
-
-    <!--
-    <com.echo.holographlibrary.LineGraph
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:id="@+id/graphAccel"
-        android:layout_below="@id/textView11"
-        android:layout_alignParentStart="true"/> -->
+        android:layout_below="@+id/textViewGyro" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -57,7 +36,7 @@
         android:id="@+id/textViewAccelometer"
         android:text="Accelometer"
         android:layout_below="@+id/textView11"
-        android:height="50dp"/>
+        android:height="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -65,45 +44,79 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Magnetometer"
         android:id="@+id/textView12"
-        android:layout_below="@+id/textViewAccelometer"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="2dp" />
-
-    <!--
-    <com.echo.holographlibrary.LineGraph
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:id="@+id/graphMagm"
-        android:layout_below="@+id/textView12"
-        android:layout_alignParentStart="true" /> -->
+        android:layout_below="@+id/textViewAccelometer" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textViewMagnetometer"
         android:layout_below="@id/textView12"
-        android:height="50dp"
+        android:height="15dp"
         android:text="Magnetometer"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="RotationNumber"
-        android:id="@+id/textView16"
-        android:layout_below="@+id/textViewMagnetometer"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="2dp" />
+        android:text="Total Rotation"
+        android:id="@+id/textView20"
+        android:layout_below="@+id/textViewMagnetometer" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewRotationNumber"
-        android:layout_below="@+id/textView16"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="2dp"
-        android:text="Rotation Number"
-        android:height="50dp"/>
+        android:id="@+id/textViewTotalRotation"
+        android:layout_below="@+id/textView20"
+        android:text="Total Rotation"
+        android:height="15dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Rpm"
+        android:id="@+id/textView21"
+        android:layout_below="@+id/textViewTotalRotation" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewRpm"
+        android:layout_below="@+id/textView21"
+        android:text="Rpm"
+        android:height="15dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Last position stopped"
+        android:id="@+id/textView22"
+        android:layout_below="@+id/textViewRpm" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewLastPositionStopped"
+        android:layout_below="@+id/textView22"
+        android:text="last position stopped"
+        android:height="15dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Direction of rotation"
+        android:id="@+id/textView23"
+        android:layout_below="@+id/textViewLastPositionStopped" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewDirectionOfRotation"
+        android:layout_below="@+id/textView23"
+        android:text="Direction of rotation"
+        android:height="15dp"/>
 
     <Button
         android:layout_width="fill_parent"
@@ -126,7 +139,7 @@
         android:layout_height="wrap_content"
         android:text="Active"
         android:id="@+id/checkBoxActive"
-        android:layout_below="@+id/textViewRotationNumber"
+        android:layout_above="@+id/buttonConnect"
         android:layout_alignParentStart="true"
         android:checked="false" />
 
