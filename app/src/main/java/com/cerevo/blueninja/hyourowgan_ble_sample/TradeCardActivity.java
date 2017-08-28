@@ -151,6 +151,8 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         setContentView(R.layout.activity_trade_card);
         progressdialog=  new ProgressDialog (this);
         progressdialog.setMessage("Fetching..Location...");
+        locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Please Grant Permission from settings", Toast.LENGTH_SHORT).show();
@@ -159,10 +161,6 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             locationmanager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,5,1200,this);
             progressdialog.show();
         }
-
-        locationmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        progressdialog = new ProgressDialog(this);
-        progressdialog.setMessage("Fetching..Location...");
 
         intent = getIntent();
         githubID = intent.getStringExtra("githubID");
