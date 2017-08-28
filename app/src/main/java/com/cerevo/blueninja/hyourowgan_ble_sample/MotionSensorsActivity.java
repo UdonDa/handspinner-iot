@@ -171,14 +171,15 @@ public class MotionSensorsActivity extends AppCompatActivity {
                         buff = ByteBuffer.wrap(mRecvValue, 0, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         short rt = buff.getShort();
-                        mTextRpm.setText("停止位置："+ rt/256);
-                        mTextTotalRotation.setText("回転方向: " + rt%256 );
+                        mTextLastStopped.setText("停止位置："+ rt/256);
+                        mTextDirectionOfRotation.setText("回転方向: " + rt%256 );
 
                         //Airpressure
                         buff = ByteBuffer.wrap(mRecvValue, 2, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         int ra = buff.getInt();
-                        mTextLatestAirp.setText(String.format("Latest: %7.2f hPa", (float)ra / 25600));
+                        mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
+                        mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
 
                         int cnt_points = 20;
                         break;
