@@ -210,8 +210,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
                         Double mLat, mLng;
                         //unchi
                         Random rand = new Random();
-                        float numLat = (float) (rand.nextInt(1) - 0.5);
-                        float numLng = (float) (rand.nextInt(1) - 0.5);
+                        Double numLat = (rand.nextInt(1) - 0.5);
+                        Double numLng = (rand.nextInt(1) - 0.5);
 
                         mLat = coordinate.mUserGpsLat + numLat;
                         mLng = coordinate.mUserGpsLng + numLng;
@@ -297,6 +297,7 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
         }
 
         if(view.getId()==R.id.buttonGoogleMap) {
+            /*
             Double mLat, mLng;
             //unchi
             mLat = mHandspinnerValues.mLat;
@@ -309,6 +310,8 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
             //Uri uri = Uri.parse("geo:"+43.06417+","+141.34694+"?q=コンビニ");//デバック用
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
+            */
+            setHandspinnerStatus(HandspinnerState.ON);
         }
         if(view.getId()==R.id.buttonConnect) {
             connectBLE();
