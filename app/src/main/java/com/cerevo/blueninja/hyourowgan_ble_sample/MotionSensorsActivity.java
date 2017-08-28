@@ -171,7 +171,8 @@ public class MotionSensorsActivity extends AppCompatActivity {
                         buff = ByteBuffer.wrap(mRecvValue, 0, 4);
                         buff.order(ByteOrder.LITTLE_ENDIAN);
                         short rt = buff.getShort();
-                        mTextLatestTemp.setText(String.format("Latest: %f digC", (float)rt / 100));
+                        mTextRpm.setText("停止位置："+ rt/256);
+                        mTextTotalRotation.setText("回転方向: " + rt%256 );
 
                         //Airpressure
                         buff = ByteBuffer.wrap(mRecvValue, 2, 4);
