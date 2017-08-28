@@ -110,16 +110,16 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         ON,
         OFF
     }
-    private TradeCardActivity.AppState mAppState = TradeCardActivity.AppState.INIT;
-    private TradeCardActivity.HandspinnerState mHandspinnerState = TradeCardActivity.HandspinnerState.OFF;
-    private void setStatus(TradeCardActivity.AppState state) {
+    private AppState mAppState = AppState.INIT;
+    private HandspinnerState mHandspinnerState = HandspinnerState.OFF;
+    private void setStatus(AppState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
         mAppState = state;
         mHandler.sendMessage(msg);
     }
-    private void setHandspinnerStatus(TradeCardActivity.HandspinnerState state) {
+    private void setHandspinnerStatus(HandspinnerState state) {
         Message msg = new Message();
         msg.what = state.ordinal();
         msg.obj = state.name();
@@ -135,10 +135,10 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     private HandspinnerValues mHandspinnerValues;
     private Handler mHandler,mHandspinnerHandler;
 
-    private TradeCardActivity.AppState getStats() {
+    private AppState getStats() {
         return mAppState;
     }
-    private TradeCardActivity.HandspinnerState getHandspinnerStats() {
+    private HandspinnerState getHandspinnerStats() {
         return mHandspinnerState;
     }
     private byte[] mRecvValue;
@@ -283,7 +283,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             @Override
             public void handleMessage(Message msg) {
                 //mTextViewStatus.setText((String)msg.obj);
-                AppState sts = TradeCardActivity.AppState.values()[msg.what];
+                AppState sts = AppState.values()[msg.what];
                 switch (sts) {
                     case INIT:
                     case BLE_SCAN_FAILED:
@@ -336,7 +336,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         mHandspinnerHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                TradeCardActivity.HandspinnerState sts = TradeCardActivity.HandspinnerState.values()[msg.what];
+                HandspinnerState sts = HandspinnerState.values()[msg.what];
                 switch (sts) {
                     case ON:
                         //isFinishedAuthentication(getApplicationContext());
@@ -507,7 +507,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             if (DEVICE_NAME.equals(device.getName())) {
-                setStatus(TradeCardActivity.AppState.BLE_DEV_FOUND);
+                setStatus(AppState.BLE_DEV_FOUND);
                 mBtAdapter.stopLeScan(this);
                 mBtGatt = device.connectGatt(getApplicationContext(), false, mBluetoothGattCallback);
             }
@@ -525,7 +525,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                     break;
                 case BluetoothProfile.STATE_DISCONNECTED:
                     /* 切断 */
-                    setStatus(TradeCardActivity.AppState.BLE_DISCONNECTED);
+                    setStatus(AppState.BLE_DISCONNECTED);
                     mBtGatt = null;
                     break;
             }
@@ -536,14 +536,14 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             BluetoothGattService service = gatt.getService(UUID.fromString(UUID_SERVICE_MSS));
             if (service == null) {
                 //サービスが見つからない
-                setStatus(TradeCardActivity.AppState.BLE_SRV_NOT_FOUND);
+                setStatus(AppState.BLE_SRV_NOT_FOUND);
             } else {
                 //サービスが見つかった
-                setStatus(TradeCardActivity.AppState.BLE_SRV_FOUND);
+                setStatus(AppState.BLE_SRV_FOUND);
                 mCharacteristic = service.getCharacteristic(UUID.fromString(UUID_CHARACTERISTIC_VALUE));
                 if (mCharacteristic == null) {
                     //Characteristicが見つからない
-                    setStatus(TradeCardActivity.AppState.BLE_CHARACTERISTIC_NOT_FOUND);
+                    setStatus(AppState.BLE_CHARACTERISTIC_NOT_FOUND);
                     return;
                 }
             }
@@ -551,7 +551,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 gatt.requestMtu(40);
             }
-            setStatus(TradeCardActivity.AppState.BLE_CONNECTED);
+            setStatus(AppState.BLE_CONNECTED);
         }
 
         @Override
@@ -559,7 +559,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             if (UUID_CHARACTERISTIC_VALUE.equals(characteristic.getUuid().toString())) {
                 byte read_data[] = characteristic.getValue();
                 mRecvValue = Arrays.copyOf(read_data, 36);
-                setStatus(TradeCardActivity.AppState.BLE_UPDATE_VALUE);
+                setStatus(AppState.BLE_UPDATE_VALUE);
             }
         }
 
@@ -575,15 +575,15 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             @Override
             public void run() {
                 mBtAdapter.stopLeScan(mLeScanCallback);
-                if (TradeCardActivity.AppState.BLE_SCANNING.equals(getStats())) {
-                    setStatus(TradeCardActivity.AppState.BLE_SCAN_FAILED);
+                if (AppState.BLE_SCANNING.equals(getStats())) {
+                    setStatus(AppState.BLE_SCAN_FAILED);
                 }
             }
         }, SCAN_TIMEOUT);
 
         mBtAdapter.stopLeScan(mLeScanCallback);
         mBtAdapter.startLeScan(mLeScanCallback);
-        setStatus(TradeCardActivity.AppState.BLE_SCANNING);
+        setStatus(AppState.BLE_SCANNING);
     }
 
     private void disconnectBLE() {
@@ -594,7 +594,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             mBtGatt = null;
             mCharacteristic = null;
 
-            setStatus(TradeCardActivity.AppState.BLE_CLOSED);
+            setStatus(AppState.BLE_CLOSED);
         }
     }
 
@@ -603,11 +603,11 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             BluetoothGattDescriptor desc = mCharacteristic.getDescriptor(UUID.fromString(UUID_CLIENT_CHARACTERISTIC_CONFIG));
             desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             if (mGatt.writeDescriptor(desc)) {
-                setStatus(TradeCardActivity.AppState.BLE_NOTIF_REGISTERD);
+                setStatus(AppState.BLE_NOTIF_REGISTERD);
                 return;
             }
         }
-        setStatus(TradeCardActivity.AppState.BLE_NOTIF_REGISTER_FAILED);
+        setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
 
     private void disableBLENotification() {
@@ -615,11 +615,11 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         desc.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
         if (mGatt.writeDescriptor(desc)) {
             if (mGatt.setCharacteristicNotification(mCharacteristic, false)) {
-                setStatus(TradeCardActivity.AppState.BLE_NOTIF_REGISTERD);
+                setStatus(AppState.BLE_NOTIF_REGISTERD);
                 return;
             }
         }
-        setStatus(TradeCardActivity.AppState.BLE_NOTIF_REGISTER_FAILED);
+        setStatus(AppState.BLE_NOTIF_REGISTER_FAILED);
     }
 
     private void showToast(String text) {
