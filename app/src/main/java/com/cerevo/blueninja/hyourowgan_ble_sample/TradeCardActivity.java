@@ -74,6 +74,9 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
 
     //BLE
     Button mButtonConnect;
+    //回転とか
+    int direction, stopPos;
+    float totalRotation, rpm;
 
     private static final int SCAN_TIMEOUT = 20000;
     private static final String DEVICE_NAME = "HyouRowGan00";
@@ -433,21 +436,30 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         for (int offset = 0; offset < recv_len; offset += 18) {
             mHandspinnerValues = new HandspinnerValues();
             /* Convert byte array to values. */
+            //Temperature
             ByteBuffer buff;
-            buff = ByteBuffer.wrap(mRecvValue, offset+0, 1);
+            buff = ByteBuffer.wrap(mRecvValue, 0, 4);
             buff.order(ByteOrder.LITTLE_ENDIAN);
-            int rotate = buff.getInt();
-            Log.v("ccworcccw", rotate + "回転方向！");
-            buff = ByteBuffer.wrap(mRecvValue, offset+1, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            int hogaku = buff.getInt();
-            Log.v("hooogaku", hogaku + "方角！！！！");
-            buff = ByteBuffer.wrap(mRecvValue, offset+2, 6);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            int rotateperminute = buff.getInt();
-            Log.v("rpm",  rotateperminute+ "回転数！");
+            short rt = buff.getShort();
+            //停止位置
+            stopPos = rt/256;
+            //回転方向
+            direction = rt%256;
+            //mTextLastStopped.setText("停止位置："+ rt/256);
+            //mTextDirectionOfRotation.setText("回転方向: " + rt%256 );
 
-            if(rotateperminute >250){
+            //Airpressure
+            buff = ByteBuffer.wrap(mRecvValue, 2, 4);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            int ra = buff.getInt();
+            //総回転数
+            totalRotation = (float)ra/(256*256);
+            //回転数
+            rpm = (float)ra%(256*256);
+            //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
+            //mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
+
+            if(rpm >250){
                 uploadUserData(myRef,userData);
             }
 

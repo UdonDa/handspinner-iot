@@ -57,6 +57,10 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
     LocationManager locationmanager;
     ProgressDialog progressdialog;
 
+    //回転とか
+    int direction, stopPos;
+    float totalRotation, rpm;
+
     //Twitter
     private Twitter mTwitter;
     public Tweet mTweet;
@@ -267,68 +271,27 @@ public class SearchGourmetActivity extends AppCompatActivity implements View.OnC
             mHandspinnerValues = new HandspinnerValues();
             /* Convert byte array to values. */
             ByteBuffer buff;
-            /*
-            //Gyro X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
+            //Temperature
+            buff = ByteBuffer.wrap(mRecvValue, 0, 4);
             buff.order(ByteOrder.LITTLE_ENDIAN);
-            grx = buff.getShort();
-            mHandspinnerValues.mKeyGyroX = (double) grx / 16.4;
-            Log.v("gyrox", mHandspinnerValues.mKeyGyroX + "gyroooo");
-            //Gyro Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 2, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            gry = buff.getShort();
-            mHandspinnerValues.mKeyGyroY = (double) gry / 16.4;
-            //Gyro Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 4, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            grz = buff.getShort();
-            mHandspinnerValues.mKeyGyroZ = (double) grz / 16.4;
-            //Accel X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 6, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arx = buff.getShort();
-            mHandspinnerValues.mKeyAccelX = (double) arx*10 / 2048;
-            //Accel Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 8, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            ary = buff.getShort();
-            mHandspinnerValues.mKeyAccelY = (double) ary*10 / 2048;
-            //Accel Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 10, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arz = buff.getShort();
-            mHandspinnerValues.mKeyAccelZ = (double) arz*10 / 2048;
-            //Magneto X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 12, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrx = buff.getShort();
-            mHandspinnerValues.mKeyMagnX = mrx;
-            //Magneto Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 14, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mry = buff.getShort();
-            mHandspinnerValues.mKeyMagnY = mry;
-            //Magneto Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 16, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrz = buff.getShort();
-            mHandspinnerValues.mKeyMagnZ = mrz;
-            */
-            buff = ByteBuffer.wrap(mRecvValue, offset+0, 1);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            int rotate = buff.getInt();
-            Log.v("ccworcccw", rotate + "回転方向！");
-            buff = ByteBuffer.wrap(mRecvValue, offset+1, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            int hogaku = buff.getInt();
-            Log.v("hooogaku", hogaku + "方角！！！！");
-            buff = ByteBuffer.wrap(mRecvValue, offset+2, 6);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            int rotateperminute = buff.getInt();
-            Log.v("rpm",  rotateperminute+ "回転数！");
+            short rt = buff.getShort();
+            //停止位置
+            stopPos = rt/256;
+            //回転方向
+            direction = rt%256;
+            //mTextLastStopped.setText("停止位置："+ rt/256);
+            //mTextDirectionOfRotation.setText("回転方向: " + rt%256 );
 
-
+            //Airpressure
+            buff = ByteBuffer.wrap(mRecvValue, 2, 4);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            int ra = buff.getInt();
+            //総回転数
+            totalRotation = (float)ra/(256*256);
+            //回転数
+            rpm = (float)ra%(256*256);
+            //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
+            //mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
         }
     }
 
