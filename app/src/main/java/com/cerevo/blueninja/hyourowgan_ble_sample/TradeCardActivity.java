@@ -76,8 +76,8 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
 
     private static final int SCAN_TIMEOUT = 20000;
     private static final String DEVICE_NAME = "HyouRowGan00";
-    private static final String UUID_SERVICE_MSS = "00050000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
-    private static final String UUID_CHARACTERISTIC_VALUE = "00050001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
+    private static final String UUID_SERVICE_MSS = "00060000-6727-11e5-988e-f07959ddcdfb";//BlueNinja Motion sensor Service
+    private static final String UUID_CHARACTERISTIC_VALUE = "00060001-6727-11e5-988e-f07959ddcdfb";//Motion sensor values.
     private static final String UUID_CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";//キャラクタリスティック設定UUID
     private static final String LOG_TAG = "HRG_MSS";
 
@@ -432,6 +432,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             mHandspinnerValues = new HandspinnerValues();
             /* Convert byte array to values. */
             ByteBuffer buff;
+            /*
             //Gyro X
             buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
@@ -478,6 +479,21 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             buff.order(ByteOrder.LITTLE_ENDIAN);
             mrz = buff.getShort();
             mHandspinnerValues.mKeyMagnZ = mrz;
+            */
+            buff = ByteBuffer.wrap(mRecvValue, offset+0, 1);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            int rotate = buff.getInt();
+            Log.v("ccworcccw", rotate + "回転方向！");
+            buff = ByteBuffer.wrap(mRecvValue, offset+1, 2);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            int hogaku = buff.getInt();
+            Log.v("hooogaku", hogaku + "方角！！！！");
+            buff = ByteBuffer.wrap(mRecvValue, offset+2, 6);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            int rotateperminute = buff.getInt();
+            Log.v("rpm",  rotateperminute+ "回転数！");
+
+
         }
     }
 
