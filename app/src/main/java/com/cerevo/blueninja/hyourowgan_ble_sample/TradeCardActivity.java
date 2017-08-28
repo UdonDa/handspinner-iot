@@ -344,7 +344,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                     if (userData.userId == 0) {
                         //初めての登録
                         //IDを取得してfirebaseにデータを送る
-                        ud.userId = id;
+                        userData.userId = id;
                         mutableData.setValue(id);
                         databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                     } else {
