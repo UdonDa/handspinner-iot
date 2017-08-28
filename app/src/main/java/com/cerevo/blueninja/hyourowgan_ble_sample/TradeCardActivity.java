@@ -41,6 +41,7 @@ import org.w3c.dom.Text;
 
 import twitter4j.User;
 
+import static android.R.attr.button;
 import static android.R.attr.key;
 
 import android.location.Location;
@@ -256,6 +257,8 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         uploadUserData(myRef, userData);
         exchangeCard = (Button) findViewById(R.id.exchange_card);
         exchangeCard.setOnClickListener(buttonClickListener);
+        mButtonConnect = (Button)findViewById(R.id.connect_button);
+        mButtonConnect.setOnClickListener(buttonClickListener);
         //パーミッションチェック
         isGpsPermission();
 
@@ -428,6 +431,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             buff.order(ByteOrder.LITTLE_ENDIAN);
             grx = buff.getShort();
             mHandspinnerValues.mKeyGyroX = (double) grx / 16.4;
+            Log.v("gyrox", mHandspinnerValues.mKeyGyroX + "gyroooo");
             //Gyro Y
             buff = ByteBuffer.wrap(mRecvValue, offset + 2, 2);
             buff.order(ByteOrder.LITTLE_ENDIAN);
