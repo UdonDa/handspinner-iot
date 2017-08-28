@@ -7,9 +7,6 @@ package com.cerevo.blueninja.hyourowgan_ble_sample;
 public class HandspinnerValues {
     HandspinnerValues(){}
 
-    public double mGyroX, mGyroY, mGyroZ;
-    public double mAccelX, mAccelY, mAccelZ;
-    public double mMagnX, mMagnY, mMagnZ;
 
     public int mTotalRotat;
     public int mRpm;
