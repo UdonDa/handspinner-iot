@@ -291,7 +291,32 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         mButtonConnect.setEnabled(false);
                         break;
                     case BLE_UPDATE_VALUE:
-                        updateValues();
+                        //updateValues();
+                        ByteBuffer buff;
+                        buff = ByteBuffer.wrap(mRecvValue, 0, 4);
+                        buff.order(ByteOrder.LITTLE_ENDIAN);
+                        short rt = buff.getShort();
+                        //停止位置
+                        stopPos = rt/256;
+                        //回転方向
+                        direction = rt%256;
+                        //mTextLastStopped.setText("停止位置："+ rt/256);
+                        //mTextDirectionOfRotation.setText("回転方向: " + rt%256 );
+
+                        //Airpressure
+                        buff = ByteBuffer.wrap(mRecvValue, 2, 4);
+                        buff.order(ByteOrder.LITTLE_ENDIAN);
+                        int ra = buff.getInt();
+                        //総回転数
+                        totalRotation = (float)ra/(256*256);
+                        //回転数
+                        rpm = (float)ra%(256*256);
+                        //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
+                        //mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
+
+                        if(rpm >250){
+                            uploadUserData(myRef,userData);
+                        }
                         break;
                 }
             }
@@ -349,6 +374,8 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         //2回目以降の名刺交換
                         //userIDはfirebaseに登録済みなのでIDの更新などは行わない
                         //まるごと送るけど，実質GPSの更新情報の更新
+                        userData.userId = id;
+                        mutableData.setValue(id);
                         databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                     }
                 }
