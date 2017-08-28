@@ -432,54 +432,6 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             mHandspinnerValues = new HandspinnerValues();
             /* Convert byte array to values. */
             ByteBuffer buff;
-            /*
-            //Gyro X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 0, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            grx = buff.getShort();
-            mHandspinnerValues.mKeyGyroX = (double) grx / 16.4;
-            Log.v("gyrox", mHandspinnerValues.mKeyGyroX + "gyroooo");
-            //Gyro Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 2, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            gry = buff.getShort();
-            mHandspinnerValues.mKeyGyroY = (double) gry / 16.4;
-            //Gyro Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 4, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            grz = buff.getShort();
-            mHandspinnerValues.mKeyGyroZ = (double) grz / 16.4;
-            //Accel X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 6, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arx = buff.getShort();
-            mHandspinnerValues.mKeyAccelX = (double) arx*10 / 2048;
-            //Accel Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 8, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            ary = buff.getShort();
-            mHandspinnerValues.mKeyAccelY = (double) ary*10 / 2048;
-            //Accel Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 10, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            arz = buff.getShort();
-            mHandspinnerValues.mKeyAccelZ = (double) arz*10 / 2048;
-            //Magneto X
-            buff = ByteBuffer.wrap(mRecvValue, offset + 12, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrx = buff.getShort();
-            mHandspinnerValues.mKeyMagnX = mrx;
-            //Magneto Y
-            buff = ByteBuffer.wrap(mRecvValue, offset + 14, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mry = buff.getShort();
-            mHandspinnerValues.mKeyMagnY = mry;
-            //Magneto Z
-            buff = ByteBuffer.wrap(mRecvValue, offset + 16, 2);
-            buff.order(ByteOrder.LITTLE_ENDIAN);
-            mrz = buff.getShort();
-            mHandspinnerValues.mKeyMagnZ = mrz;
-            */
             buff = ByteBuffer.wrap(mRecvValue, offset+0, 1);
             buff.order(ByteOrder.LITTLE_ENDIAN);
             int rotate = buff.getInt();
@@ -492,6 +444,10 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             buff.order(ByteOrder.LITTLE_ENDIAN);
             int rotateperminute = buff.getInt();
             Log.v("rpm",  rotateperminute+ "回転数！");
+
+            if(rotateperminute >250){
+                uploadUserData(myRef,userData);
+            }
 
 
         }
