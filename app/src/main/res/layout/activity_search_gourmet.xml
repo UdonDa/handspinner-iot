@@ -25,13 +25,23 @@
             android:textSize="24dp"
             android:text="Location"/>
 
-    </LinearLayout>
 
+    </LinearLayout>
     <Button
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/buttonGoogleMap"
         android:text="Search in GoogleMap"
         android:layout_below="@+id/linearGps"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/connect_button2"
+        android:text="connect"
+        android:layout_below="@+id/buttonGoogleMap"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="14dp" />
+
+
 
 </RelativeLayout>
