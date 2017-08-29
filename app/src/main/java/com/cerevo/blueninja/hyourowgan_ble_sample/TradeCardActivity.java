@@ -384,8 +384,8 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         //2回目以降の名刺交換
                         //userIDはfirebaseに登録済みなのでIDの更新などは行わない
                         //まるごと送るけど，実質GPSの更新情報の更新
-                        userData.userId = id;
-                        mutableData.setValue(id);
+                        //userData.userId = id;
+                        mutableData.setValue(userData.userId);
                         databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
                     }
                 }
