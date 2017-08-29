@@ -374,23 +374,23 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                 if (mutableData.getValue() == null) {
                     ud.userId = 1;
                     mutableData.setValue(1);
-                    databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
+                    databaseReference.child("exchangeRoom").child(String.valueOf(ud.userId)).setValue(ud);
                 } else {
                     id = mutableData.getValue(int.class) + 1;
                     Log.v("firebase", id + mutableData.getKey());
-                    if (userData.userId == 0 ) {
+                    if (ud.userId == 0 ) {
                         //初めての登録
                         //IDを取得してfirebaseにデータを送る
-                        userData.userId = id;
+                        ud.userId = id;
                         mutableData.setValue(id);
-                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
+                        databaseReference.child("exchangeRoom").child(String.valueOf(ud.userId)).setValue(ud);
                     } else {
                         //2回目以降の名刺交換
                         //userIDはfirebaseに登録済みなのでIDの更新などは行わない
                         //まるごと送るけど，実質GPSの更新情報の更新
                         //userData.userId = id;
                         //mutableData.setValue(userData.userId);
-                        databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
+                        databaseReference.child("exchangeRoom").child(String.valueOf(ud.userId)).setValue(ud);
                     }
                 }
                 return Transaction.success(mutableData);
