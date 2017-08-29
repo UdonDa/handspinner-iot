@@ -74,6 +74,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     ProgressDialog progressdialog;
     ChildEventListener childEventListener;
     Boolean isexchanged = false;
+    int id;
 
     //BLE
     Button mButtonConnect;
@@ -360,20 +361,23 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         super.onStop();
         disconnectBLE();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        isexchanged = false;
     }
 
 
     private void uploadUserData(final DatabaseReference databaseReference, final UserData ud) {
         //部屋に入る時，部屋の人数に合わせてuserIdを決める
+        //int id;
         databaseReference.child("numberOfUserData").runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
-                if (mutableData.getValue() == null) {
+                if (mutableData.getValue() == null && mutableData.getValue(int.class) < 1) {
                     ud.userId = 1;
                     mutableData.setValue(1);
                     databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                 } else {
-                    int id = mutableData.getValue(int.class) + 1;
+                    id = mutableData.getValue(int.class) + 1;
+                    Log.v("firebase", id + mutableData.getKey());
                     if (userData.userId == 0) {
                         //初めての登録
                         //IDを取得してfirebaseにデータを送る
@@ -385,7 +389,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         //userIDはfirebaseに登録済みなのでIDの更新などは行わない
                         //まるごと送るけど，実質GPSの更新情報の更新
                         //userData.userId = id;
-                        mutableData.setValue(userData.userId);
+                        //mutableData.setValue(userData.userId);
                         databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(userData);
                     }
                 }
