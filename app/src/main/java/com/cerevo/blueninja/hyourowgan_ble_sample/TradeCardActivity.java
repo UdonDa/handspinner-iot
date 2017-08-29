@@ -275,7 +275,6 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         initTextView();
         userData = new UserData(myName, githubID, twitterID, lineID, latitude, longitude);
         //userData.userKey = myRef.push().getKey();
-        uploadUserData(myRef, userData);
         exchangeCard = (Button) findViewById(R.id.exchange_card);
         exchangeCard.setOnClickListener(buttonClickListener);
         mButtonConnect = (Button)findViewById(R.id.connect_button);
@@ -372,6 +371,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 if (mutableData.getValue() == null) {
+                    Log.v("firebase0", ud.userId + mutableData.getKey());
                     ud.userId = 1;
                     mutableData.setValue(1);
                     databaseReference.child("exchangeRoom").child(String.valueOf(ud.userId)).setValue(ud);
@@ -381,10 +381,12 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                     if (ud.userId == 0 ) {
                         //初めての登録
                         //IDを取得してfirebaseにデータを送る
+                        Log.v("firebase2", id + mutableData.getKey());
                         ud.userId = id;
                         mutableData.setValue(id);
                         databaseReference.child("exchangeRoom").child(String.valueOf(ud.userId)).setValue(ud);
                     } else {
+                        Log.v("firebase3", id + mutableData.getKey());
                         //2回目以降の名刺交換
                         //userIDはfirebaseに登録済みなのでIDの更新などは行わない
                         //まるごと送るけど，実質GPSの更新情報の更新
