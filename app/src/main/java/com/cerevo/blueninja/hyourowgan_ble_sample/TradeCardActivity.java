@@ -64,7 +64,7 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
     String myName,gettedName;
     Double latitude, longitude;
     float[] distance = new float[3];
-    Double gettedLatitude, gettedlongitude;
+    long gettedLatitude, gettedlongitude;
     long throwTime;
     Button exchangeCard;
     FirebaseDatabase database;
@@ -235,11 +235,11 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                                 break;
                             }
                             case "latitude":{
-                                gettedLatitude = (double)snapshot.getValue();
+                                gettedLatitude = snapshot.getValue(long.class);
                                 break;
                             }
                             case "longitude":{
-                                gettedlongitude = (double)snapshot.getValue();
+                                gettedlongitude = snapshot.getValue(long.class);
                                 break;
                             }
                         }
@@ -371,14 +371,14 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
         databaseReference.child("numberOfUserData").runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
-                if (mutableData.getValue() == null && mutableData.getValue(int.class) < 1) {
+                if (mutableData.getValue() == null) {
                     ud.userId = 1;
                     mutableData.setValue(1);
                     databaseReference.child("exchangeRoom").child(String.valueOf(userData.userId)).setValue(ud);
                 } else {
                     id = mutableData.getValue(int.class) + 1;
                     Log.v("firebase", id + mutableData.getKey());
-                    if (userData.userId == 0) {
+                    if (userData.userId == 0 ) {
                         //初めての登録
                         //IDを取得してfirebaseにデータを送る
                         userData.userId = id;
