@@ -6,74 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.cerevo.blueninja.hyourowgan_ble_sample.HandspinnerAuthenticationActivity">
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Authenticate Active"
-        android:id="@+id/checkBoxActive"
-        android:layout_alignParentStart="true"
-        android:checked="false" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Direction of rotation"
+        android:text="Spin Your Hnadspinner"
         android:id="@+id/textView23"
         android:layout_below="@+id/checkBoxActive" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewDirectionOfRotation"
-        android:layout_below="@+id/textView23"
-        android:text="Direction of rotation"
-        android:height="50dp"/>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Rpm"
-        android:id="@+id/textView21"
-        android:layout_below="@+id/textViewDirectionOfRotation" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewRpm"
-        android:layout_below="@+id/textView21"
-        android:text="Rpm"
-        android:height="50dp"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="鍵登録"
-        android:id="@+id/buttonRegisterKey"
-        android:layout_below="@+id/buttonConnect"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="connect"
-        android:id="@+id/buttonConnect"
-        android:layout_below="@+id/textViewRpm"/>
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewBleStatus"
-        android:layout_toRightOf="@+id/buttonConnect"
-        android:text="not connected"
-        android:height="30dp"
-        android:layout_below="@id/textViewRpm"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="強制認証デバッグ"
-        android:id="@+id/buttonForceAuthentication"
-        android:layout_below="@+id/buttonRegisterKey"/>
 </RelativeLayout>

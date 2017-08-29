@@ -330,6 +330,9 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                         //mTextTotalRotation.setText(String.format("総合回転数: %7.2f", (float)ra / (256 * 256)));
                         //mTextRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
 
+
+
+
                         if(rpm >250){
                             uploadUserData(myRef,userData);
                         }
@@ -353,6 +356,22 @@ public class TradeCardActivity extends AppCompatActivity implements LocationList
                 }
             }
         };
+
+        //      デモ用delay
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //                        デモ用
+                gettedName = "TestUser";
+                gettedGithubID = "Octcat";
+                gettedTwitterID = "Blue_SNS";
+                gettedLineID = "Green_SNS";
+
+                reloadView();
+
+            }
+        }, 9000);
+
 
     }
     @Override

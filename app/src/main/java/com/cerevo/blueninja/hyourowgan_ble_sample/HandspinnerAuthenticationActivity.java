@@ -109,7 +109,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                mTextViewStatus.setText((String)msg.obj);
                 AppState sts = AppState.values()[msg.what];
                 switch (sts) {
                     case INIT:
@@ -151,6 +150,7 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                         mTextViewRpm.setText(String.format("rpm: %7.2f", (float)ra % (256 * 256)));
 
                         //認証
+//                        keyのところ
                         if(mDirection == mHandspinnerValues.mKeyDirectionOfRotation) {
                             if((rpm < mHandspinnerValues.mKeyRpm + 50) || (rpm > mHandspinnerValues.mKeyRpm - 50) ) {
                             //if(rpm == mHandspinnerValues.mKeyRpm) {
@@ -179,6 +179,13 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 }
             }
         };
+//      デモ用delay
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setHandspinnerStatus(HandspinnerState.ON);
+            }
+        }, 5000);
     }
 
     private void initViews() {
@@ -188,17 +195,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Warning: Bluetooth Disabled.", Toast.LENGTH_SHORT).show();
             finish();
         }
-        mTextViewStatus = (TextView)findViewById(R.id.textViewBleStatus);
-        mTextViewRpm = (TextView)findViewById(R.id.textViewRpm);
-        mTextViewDirectionOfRotation = (TextView)findViewById(R.id.textViewDirectionOfRotation);
-        buttonRegisterKey = (Button)findViewById(R.id.buttonRegisterKey);
-        buttonRegisterKey.setOnClickListener(buttonClickListener);
-        mButtonConnect = (Button)findViewById(R.id.buttonConnect);
-        mButtonConnect.setOnClickListener(buttonClickListener);
-        mButtonForceAuthentication = (Button)findViewById(R.id.buttonForceAuthentication);
-        mButtonForceAuthentication.setOnClickListener(buttonClickListener);
-        checkBoxAuthenticate = (CheckBox)findViewById(R.id.checkBoxActive);
-        checkBoxAuthenticate.setOnClickListener(checkboxClickListener);
 
         mHandspinnerValues = new HandspinnerValues();
         mHandspinnerValues.mKeyRpm = 700;
@@ -211,8 +207,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setStatus(AppState.INIT);
-        checkBoxAuthenticate.setChecked(false);
-        checkBoxAuthenticate.setEnabled(false);
     }
 
     @Override
@@ -231,9 +225,6 @@ public class HandspinnerAuthenticationActivity extends AppCompatActivity {
                 case R.id.buttonRegisterKey:
                     intent = new Intent(getApplicationContext(), RegisterKeyActivity.class);
                     startActivity(intent);
-                    break;
-                case R.id.buttonForceAuthentication:
-                    setHandspinnerStatus(HandspinnerState.ON);
                     break;
                 case R.id.buttonConnect:
                     connectBLE();
